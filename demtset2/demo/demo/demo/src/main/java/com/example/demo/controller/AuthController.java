@@ -45,12 +45,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
-        User user = userService.authenticateUser(email, password);
-        if (user == null) {
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required");
+        }
+        if (password == null || password.isEmpty()) {
+            return ResponseEntity.badRequest().body("Password is required");
+        }
+
+        boolean authenticated = userService.authenticate(email, password);
+        if (!authenticated) {
             return ResponseEntity.status(401).body("Invalid email or password");
         }
-        // Generate JWT token (assuming you have a method for this)
-        String token = userService.generateToken(user);
-        return ResponseEntity.ok(token);
+
+        User loggedInUser = userService.findByEmail(email);
+        return ResponseEntity.ok(loggedInUser);
     }
 }

@@ -113,27 +113,4 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred during login');
         }
     });
-    // Funkcja sprawdzająca status logowania
-    async function checkAuthentication() {
-        const token = localStorage.getItem("jwt"); // Pobierz token z localStorage
-
-        try {
-            const response = await fetch("/api/auth/status", {
-                headers: {
-                    "Authorization": `Bearer ${token}` // Dodaj token do nagłówka Authorization
-                }
-            });
-
-            if (response.ok) {
-                window.location.href = "services.html"; // Jeśli użytkownik jest zalogowany, przejdź do services.html
-            } else {
-                alert("Musisz się zalogować, aby uzyskać dostęp do tej strony!");
-            }
-        } catch (error) {
-            console.error("Error checking authentication:", error);
-            alert("Wystąpił problem przy weryfikacji logowania.");
-        }
-    }
-
-
 });

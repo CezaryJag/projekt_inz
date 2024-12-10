@@ -44,10 +44,136 @@
             <span class="close-btn" id="close-add-car">&times;</span>
             <h2>Dodaj Auto</h2>
             <form id="add-car-form">
-                <input type="text" id="car-model" placeholder="Model" required>
-                <input type="number" id="car-year" placeholder="Rok" required>
-                <input type="text" id="car-registration" placeholder="Numer rejestracyjny" required>
+                <h2>General Information</h2>
+                <div class="form-group">
+                    <label for="car-model">Model:</label>
+                    <select id="car-model" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="car-type">Typ Samochodu:</label>
+                    <select id="car-type" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="car-year">Rok:</label>
+                    <input type="number" id="car-year" placeholder="Rok" required>
+                </div>
+                <div class="form-group">
+                    <label for="car-registration">Numer rejestracyjny:</label>
+                    <input type="text" id="car-registration" placeholder="Numer rejestracyjny" required>
+                </div>
+                <div class="form-group">
+                    <label for="gearbox-type">Typ Skrzyni Biegów:</label>
+                    <select id="gearbox-type" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="gear-count">Liczba Biegów:</label>
+                    <select id="gear-count" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fuel-type">Typ Paliwa:</label>
+                    <select id="fuel-type" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+
+                <h2>Maintenance Information</h2>
+                <div class="form-group">
+                    <label for="maintenanceDate">Maintenance Date:</label>
+                    <input type="date" id="maintenanceDate" name="maintenanceDate">
+                </div>
+                <div class="form-group">
+                    <label for="maintenanceDetails">Maintenance Details:</label>
+                    <input type="text" id="maintenanceDetails" name="maintenanceDetails">
+                </div>
+
+                <h2>Insurance Information</h2>
+                <div class="form-group">
+                    <label for="policyNumber">Policy Number:</label>
+                    <input type="text" id="policyNumber" name="policyNumber">
+                </div>
+                <div class="form-group">
+                    <label for="insuranceCompany">Insurance Company:</label>
+                    <input type="text" id="insuranceCompany" name="insuranceCompany">
+                </div>
+
                 <button type="submit">Dodaj</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="edit-car-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-edit-car">&times;</span>
+            <h2>Edytuj Auto</h2>
+            <form id="edit-car-form">
+                <h2>General Information</h2>
+                <div class="form-group">
+                    <label for="edit-car-model">Model:</label>
+                    <select id="edit-car-model" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-car-type">Typ Samochodu:</label>
+                    <select id="edit-car-type" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-car-year">Rok:</label>
+                    <input type="number" id="edit-car-year" placeholder="Rok" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-car-registration">Numer rejestracyjny:</label>
+                    <input type="text" id="edit-car-registration" placeholder="Numer rejestracyjny" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-gearbox-type">Typ Skrzyni Biegów:</label>
+                    <select id="edit-gearbox-type" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-gear-count">Liczba Biegów:</label>
+                    <select id="edit-gear-count" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-fuel-type">Typ Paliwa:</label>
+                    <select id="edit-fuel-type" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+
+                <h2>Maintenance Information</h2>
+                <div class="form-group">
+                    <label for="edit-maintenanceDate">Maintenance Date:</label>
+                    <input type="date" id="edit-maintenanceDate" name="maintenanceDate">
+                </div>
+                <div class="form-group">
+                    <label for="edit-maintenanceDetails">Maintenance Details:</label>
+                    <input type="text" id="edit-maintenanceDetails" name="maintenanceDetails">
+                </div>
+
+                <h2>Insurance Information</h2>
+                <div class="form-group">
+                    <label for="edit-policyNumber">Policy Number:</label>
+                    <input type="text" id="edit-policyNumber" name="policyNumber">
+                </div>
+                <div class="form-group">
+                    <label for="edit-insuranceCompany">Insurance Company:</label>
+                    <input type="text" id="edit-insuranceCompany" name="insuranceCompany">
+                </div>
+
+                <button type="submit">Zapisz</button>
             </form>
         </div>
     </div>

@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Car;
 import com.example.demo.service.CarService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,21 +11,26 @@ import java.util.List;
 @RequestMapping("/api/cars")
 public class CarController {
 
-    private final CarService carService;
+    @Autowired
+    private CarService carService;
 
-    public CarController(CarService carService) {
-        this.carService = carService;
+    @GetMapping
+    public List<Car> getAllCars() {
+        return carService.getAllCars();
     }
 
     @PostMapping
-    public ResponseEntity<Car> addCar(@RequestBody Car car) {
-        Car savedCar = carService.saveCar(car);
-        return ResponseEntity.ok(savedCar);
+    public Car addCar(@RequestBody Car car) {
+        return carService.addCar(car);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Car>> getAllCars() {
-        List<Car> cars = carService.getAllCars();
-        return ResponseEntity.ok(cars);
+    @PutMapping("/{id}")
+    public Car updateCar(@PathVariable Long id, @RequestBody Car car) {
+        return carService.updateCar(id, car);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCar(@PathVariable Long id) {
+        carService.deleteCar(id);
     }
 }

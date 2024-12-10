@@ -43,6 +43,8 @@ public class User {
     @Column(name = "is_email_confirmed")
     private boolean isEmailConfirmed = false;
 
+    private boolean enabled = false;
+
     // Getters and setters
     public Long getUserId() {
         return userId;
@@ -130,5 +132,13 @@ public class User {
 
     public void setEmailConfirmed(boolean emailConfirmed) {
         isEmailConfirmed = emailConfirmed;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

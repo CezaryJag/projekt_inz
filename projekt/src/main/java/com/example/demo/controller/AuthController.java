@@ -30,6 +30,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Password is required");
         }
 
+
+
         // Save the user to the database
         userService.registerUser(
                 user.getName(),
@@ -40,7 +42,7 @@ public class AuthController {
                 user.getAddress(),
                 user.getPhoneNumber()
         );
-        return ResponseEntity.ok("User registered successfully");
+        return ResponseEntity.ok("User registered successfully, check your email");
     }
 
     @PostMapping("/login")
@@ -59,5 +61,16 @@ public class AuthController {
 
         User loggedInUser = userService.findByEmail(email);
         return ResponseEntity.ok(loggedInUser);
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<String> confirm(@RequestParam String token) {
+        System.out.println("Otrzymano żądanie z tokenem: " + token);
+        boolean result = userService.confirmToken(token);
+        if (result) {
+            return ResponseEntity.ok("Email successfully confirmed.");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid or expired token.");
+        }
     }
 }

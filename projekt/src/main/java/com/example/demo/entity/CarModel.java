@@ -9,23 +9,20 @@ public class CarModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "model_id")
-    private Integer modelId;
+    private Long modelId;
 
-    @Column(name = "model_name", nullable = false, length = 20)
+    @Column(name = "model_name", nullable = false, length = 255)
     private String modelName;
 
-    @Column(name = "car_type", length = 20)
+    @Column(name = "car_type", nullable = false, length = 50)
     private String carType;
 
-    @Column(name = "car_brand", length = 50)
-    private String carBrand;
-
     // Getters and setters
-    public Integer getModelId() {
+    public Long getModelId() {
         return modelId;
     }
 
-    public void setModelId(Integer modelId) {
+    public void setModelId(Long modelId) {
         this.modelId = modelId;
     }
 
@@ -43,13 +40,5 @@ public class CarModel {
 
     public void setCarType(String carType) {
         this.carType = carType;
-    }
-
-    public String getCarBrand() {
-        return carBrand;
-    }
-
-    public void setCarBrand(String carBrand) {
-        this.carBrand = carBrand;
     }
 }

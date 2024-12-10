@@ -1,9 +1,10 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "Vehicles")
+@Table(name = "vehicles")
 public class Car {
 
     @Id
@@ -11,21 +12,26 @@ public class Car {
     @Column(name = "vehicle_id")
     private Long vehicleId;
 
-    @Column(name = "user_id")
-    private Long userId;
-
-    @Column(name = "registration_number", nullable = false, length = 8)
-    private String registrationNumber;
+    @ManyToOne
+    @JoinColumn(name = "model_id", nullable = false)
+    private CarModel carModel;
 
     @Column(name = "production_year", nullable = false)
-    private Integer productionYear;
+    private int productionYear;
 
-    @Column(name = "model_id", nullable = false)
-    private Integer modelId;
+    @Column(name = "registration_number", nullable = false)
+    private String registrationNumber;
 
     @ManyToOne
-    @JoinColumn(name = "model_id", referencedColumnName = "model_id", insertable = false, updatable = false)
-    private CarModel carModel;
+    @JoinColumn(name = "gearbox_type_id", nullable = false)
+    private GearboxType1 gearboxType;
+
+    @ManyToOne
+    @JoinColumn(name = "gear_count_id", nullable = false)
+    private GearboxCount gearCount;
+
+    @OneToMany(mappedBy = "vehicle")
+    private List<Maintenance1> maintenances;
 
     // Getters and setters
     public Long getVehicleId() {
@@ -36,12 +42,20 @@ public class Car {
         this.vehicleId = vehicleId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public CarModel getCarModel() {
+        return carModel;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setCarModel(CarModel carModel) {
+        this.carModel = carModel;
+    }
+
+    public int getProductionYear() {
+        return productionYear;
+    }
+
+    public void setProductionYear(int productionYear) {
+        this.productionYear = productionYear;
     }
 
     public String getRegistrationNumber() {
@@ -52,27 +66,27 @@ public class Car {
         this.registrationNumber = registrationNumber;
     }
 
-    public Integer getProductionYear() {
-        return productionYear;
+    public GearboxType1 getGearboxType() {
+        return gearboxType;
     }
 
-    public void setProductionYear(Integer productionYear) {
-        this.productionYear = productionYear;
+    public void setGearboxType(GearboxType1 gearboxType) {
+        this.gearboxType = gearboxType;
     }
 
-    public Integer getModelId() {
-        return modelId;
+    public GearboxCount getGearCount() {
+        return gearCount;
     }
 
-    public void setModelId(Integer modelId) {
-        this.modelId = modelId;
+    public void setGearCount(GearboxCount gearCount) {
+        this.gearCount = gearCount;
     }
 
-    public CarModel getCarModel() {
-        return carModel;
+    public List<Maintenance1> getMaintenances() {
+        return maintenances;
     }
 
-    public void setCarModel(CarModel carModel) {
-        this.carModel = carModel;
+    public void setMaintenances(List<Maintenance1> maintenances) {
+        this.maintenances = maintenances;
     }
 }

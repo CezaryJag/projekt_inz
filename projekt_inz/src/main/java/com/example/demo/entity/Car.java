@@ -3,7 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Vehicles")
+@Table(name = "vehicles")
 public class Car {
 
     @Id
@@ -26,6 +26,28 @@ public class Car {
     @ManyToOne
     @JoinColumn(name = "model_id", referencedColumnName = "model_id", insertable = false, updatable = false)
     private CarModel carModel;
+
+    @Column(name = "gear_count")
+    private Integer gearCount;
+
+    @Column(name = "gear_type")
+    private String gearType;
+
+    @Column(name = "milage")
+    private Integer milage;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "color")
+    private String color;
+
+    @Column(name = "maintenance_id")
+    private Integer maintenanceId;
+
+    @ManyToOne
+    @JoinColumn(name = "maintenance_id", referencedColumnName = "maintenance_id", insertable = false, updatable = false)
+    private Maintenance maintenance;
 
     // Getters and setters
     public Long getVehicleId() {
@@ -74,5 +96,61 @@ public class Car {
 
     public void setCarModel(CarModel carModel) {
         this.carModel = carModel;
+    }
+
+    public Integer getGearCount() {
+        return gearCount;
+    }
+
+    public void setGearCount(Integer gearCount) {
+        this.gearCount = gearCount;
+    }
+
+    public String getGearType() {
+        return gearType;
+    }
+
+    public void setGearType(String gearType) {
+        this.gearType = gearType;
+    }
+
+    public Integer getMilage() {
+        return milage;
+    }
+
+    public void setMilage(Integer milage) {
+        this.milage = milage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public Integer getMaintenanceId() {
+        return maintenanceId;
+    }
+
+    public void setMaintenanceId(Integer maintenanceId) {
+        this.maintenanceId = maintenanceId;
+    }
+
+    public Maintenance getMaintenance() {
+        return maintenance;
+    }
+
+    public void setMaintenance(Maintenance maintenance) {
+        this.maintenance = maintenance;
     }
 }

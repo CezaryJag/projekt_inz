@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Samochodów</title>
+    <link rel="stylesheet" href="services.css">
+</head>
+<body>
+<header class="navbar">
+    <nav>
+        <ul class="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="services.html">Services</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="content">
+    <div class="tabs">
+        <div class="tab active" id="tab-general">Ogólne</div>
+    </div>
+    <section id="general-section" class="tab-content">
+        <div class="car-list-container">
+            <h2>Lista Samochodów</h2>
+            <table id="car-list" class="car-table">
+                <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Numer Rejestracyjny</th>
+                    <th>Rok</th>
+                    <th>Status</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Wiersze samochodów będą dodawane dynamicznie -->
+                </tbody>
+            </table>
+            <button id="add-car-btn">Dodaj Auto</button>
+        </div>
+    </section>
+    <div class="modal" id="add-car-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-car">&times;</span>
+            <h2>Dodaj Auto</h2>
+            <form id="add-car-form">
+                <input type="text" id="car-model" placeholder="Model" required>
+                <input type="number" id="car-year" placeholder="Rok" required>
+                <input type="text" id="car-registration" placeholder="Numer rejestracyjny" required>
+                <input type="number" id="car-milage" placeholder="Przebieg" required>
+                <input type="text" id="car-color" placeholder="Kolor" required>
+                <input type="text" id="car-gear-type" placeholder="Typ Skrzyni Biegów">
+                <input type="number" id="car-gear-count" placeholder="Liczba Biegów">
+                <input type="text" id="car-status" placeholder="Status">
+                <h3>Przegląd</h3>
+                <div class="date-fields">
+                    <label for="maintenance-date">od:</label>
+                    <input type="date" id="maintenance-date" placeholder="Data Konserwacji">
+                    <label for="maintenance-end-date">do:</label>
+                    <input type="date" id="maintenance-end-date" placeholder="Data Zakończenia Konserwacji">
+                </div>
+                <input type="number" id="maintenance-cost" placeholder="Koszt">
+                <textarea id="maintenance-details" placeholder="Szczegóły"></textarea>
+                <button type="submit">Dodaj</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="details-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-details">&times;</span>
+            <h2>Szczegóły Auta</h2>
+            <form id="details-form">
+                <input type="hidden" id="details-id">
+                <input type="text" id="details-model" placeholder="Model" required>
+                <input type="number" id="details-year" placeholder="Rok" required>
+                <input type="text" id="details-registration" placeholder="Numer rejestracyjny" required>
+                <input type="number" id="details-milage" placeholder="Przebieg" required>
+                <input type="text" id="details-color" placeholder="Kolor" required>
+                <input type="text" id="details-gear-type" placeholder="Typ Skrzyni Biegów">
+                <input type="number" id="details-gear-count" placeholder="Liczba Biegów">
+                <input type="text" id="details-status" placeholder="Status">
+                <h3>Przegląd</h3>
+                <div class="date-fields">
+                    <label for="details-maintenance-date">od:</label>
+                    <input type="date" id="details-maintenance-date" placeholder="Data Konserwacji">
+                    <label for="details-maintenance-end-date">do:</label>
+                    <input type="date" id="details-maintenance-end-date" placeholder="Data Zakończenia Konserwacji">
+                </div>
+                <input type="number" id="details-maintenance-cost" placeholder="Koszt">
+                <textarea id="details-maintenance-details" placeholder="Szczegóły"></textarea>
+                <button type="submit">Zapisz</button>
+            </form>
+        </div>
+    </div>
+</main>
+<script src="services.js"></script>
+</body>
+</html>

@@ -14,11 +14,7 @@ public class CarModel {
     @Column(name = "model_name", nullable = false, length = 20)
     private String modelName;
 
-    @Column(name = "car_type", length = 20)
-    private String carType;
 
-    @Column(name = "car_brand", length = 50)
-    private String carBrand;
 
     // Getters and setters
     public Integer getModelId() {
@@ -37,19 +33,4 @@ public class CarModel {
         this.modelName = modelName;
     }
 
-    public String getCarType() {
-        return carType;
-    }
-
-    public void setCarType(String carType) {
-        this.carType = carType;
-    }
-
-    public String getCarBrand() {
-        return carBrand;
-    }
-
-    public void setCarBrand(String carBrand) {
-        this.carBrand = carBrand;
-    }
 }

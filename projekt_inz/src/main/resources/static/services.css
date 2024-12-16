@@ -5,25 +5,39 @@
     box-sizing: border-box;
 }
 .navbar {
-    background-color: #007bff;
-    padding: 70px 20px;
+    background-color: #168fb2; /* Tło navbar */
+    padding: 20px;
+    position: fixed; /* Stała pozycja na górze strony */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.date-fields {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .nav-links {
     list-style: none;
     display: flex;
     justify-content: center;
-    gap: 50px;
+    gap: 40px; /* Odstęp między elementami */
+    margin: 0;
 }
 
 .nav-links a {
     color: white;
     text-decoration: none;
-    font-size: 30px;
-    font-weight: bold;
+    font-size: 18px;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
-
 .nav-links a:hover {
+    color: #00e6e6;
     text-decoration: underline;
 }
 /* Styl dla tabeli samochodów */
@@ -81,7 +95,7 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 400px;
     text-align: center;
     position: relative;
 }

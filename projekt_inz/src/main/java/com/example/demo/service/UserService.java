@@ -35,7 +35,9 @@ public class UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
-
+        if (role == null || role.isEmpty()) {
+            role = "USER";
+        }
         // Szyfrowanie hasła
         String encodedPassword = passwordEncoder.encode(password);
 

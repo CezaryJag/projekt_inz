@@ -1,18 +1,26 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
+import com.example.demo.security.JwtService;
 import com.example.demo.service.UserService;
+import io.jsonwebtoken.Claims;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
     public AuthController(UserService userService) {
         this.userService = userService;
+        this.jwtService = new JwtService();
     }
 
     @PostMapping("/register")
@@ -60,7 +68,11 @@ public class AuthController {
         }
 
         User loggedInUser = userService.findByEmail(email);
-        return ResponseEntity.ok(loggedInUser);
+        String token = jwtService.generateToken(loggedInUser.getEmail());
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("user", loggedInUser);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/confirm")
@@ -71,6 +83,28 @@ public class AuthController {
             return ResponseEntity.ok("Email successfully confirmed.");
         } else {
             return ResponseEntity.badRequest().body("Invalid or expired token.");
+        }
+    }
+
+    @PostMapping("/verify-token")
+    public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String token) {
+        try {
+            if (token == null || !token.startsWith("Bearer ")) {
+                System.out.println("AUTH CONTROLLER DZIALA");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is required");
+            }
+
+            String jwtToken = token.substring(7);  // Usunięcie "Bearer " z tokenu
+            Claims claims = jwtService.extractAllClaims(jwtToken);
+            if (claims == null || jwtService.isTokenExpired(jwtToken)) {
+                System.out.println("AUTH CONTROLLER NIE DZIALA");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid or expired");
+            }
+
+            return ResponseEntity.ok("Token is valid");
+        } catch (Exception e) {
+            System.out.println("AUTH CONTROLLER CATCH");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
         }
     }
 }

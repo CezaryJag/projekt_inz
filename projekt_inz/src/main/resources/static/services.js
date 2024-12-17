@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailsModal = document.getElementById('details-modal');
     const closeDetails = document.getElementById('close-details');
     const detailsForm = document.getElementById('details-form');
+    const token = localStorage.getItem('authToken');
 
     // Open modal
     addCarBtn.addEventListener('click', () => {
@@ -34,15 +35,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get form data
         const carData = getCarFormData(addCarForm);
 
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            alert('You must be logged in to add a car.');
+            window.location.href = 'main.html';
+            return;
+        }
+
         try {
             const response = await fetch('/cars', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(carData)
             });
 
+            if (response.status === 401) {
+                alert('Session expired or invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
+                window.location.href = 'main.html';
+                return;
+            }
             if (response.ok) {
                 const newCar = await response.json();
                 addCarToTable(newCar);
@@ -59,11 +74,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch and display cars
     async function fetchCars() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            alert('You must be logged in to access this data.');
+            window.location.href = 'main.html';
+            return;
+        }
         try {
-            const response = await fetch('/cars');
-            const cars = await response.json();
-            carList.innerHTML = ''; // Clear the table before adding new rows
-            cars.forEach(addCarToTable);
+            const response = await fetch('/cars', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.status === 401) {
+                alert('Session expired or invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
+                window.location.href = 'main.html';
+                return;
+            }
+            if (response.ok) {
+                const cars = await response.json();
+                carList.innerHTML = ''; // Clear the table before adding new rows
+                cars.forEach(addCarToTable);
+            }else {
+                alert('Failed to fetch cars.');
+            }
         } catch (error) {
             console.error('Error:', error);
         }
@@ -90,11 +126,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const removeBtn = row.querySelector('.remove-btn');
         removeBtn.addEventListener('click', async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('You must be logged in to add a car.');
+                window.location.href = 'main.html';
+                return;
+            }
+
             try {
                 const response = await fetch(`/cars/${car.vehicleId}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
-
+                if (response.status === 401) {
+                    alert('Session expired or invalid token. Please log in again.');
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'main.html';
+                    return;
+                }
                 if (response.ok) {
                     carList.removeChild(row);
                 } else {
@@ -146,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/cars/${vehicleId}`, {
                 method: 'PUT',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(carData)

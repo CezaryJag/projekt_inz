@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const showRegisterLink = document.getElementById('show-register');
     const showLoginLink = document.getElementById('show-login');
+    const servicesBtn = document.getElementById('services-btn');
 
     // Open login modal
     loginBtn.addEventListener('click', () => {
@@ -96,8 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                alert('Login successful');
-                loginModal.style.display = 'none';
+                const data = await response.json();
+                const token = data.token;
+
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                    alert('Login successful');
+                    loginModal.style.display = 'none';
+                }
             } else {
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
@@ -111,6 +118,50 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error:', error);
             alert('An error occurred during login');
+        }
+    });
+
+    servicesBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            try {
+                const response = await fetch('/api/auth/verify-token', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    window.location.href = 'services.html';
+                } else {
+                    alert('Invalid or expired token. Please log in again.');
+                    localStorage.removeItem('authToken');
+                    const loginModal = document.getElementById('login-modal');
+                    const loginForm = document.getElementById('login-form');
+                    const registerForm = document.getElementById('register-form');
+
+                    loginModal.style.display = 'flex';
+                    loginForm.classList.add('active');
+                    registerForm.classList.remove('active');
+                    loginForm.reset();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while verifying the token.');
+            }
+        } else {
+            alert('You must be logged in to access this page.');
+            const loginModal = document.getElementById('login-modal');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+
+            loginModal.style.display = 'flex';
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+            loginForm.reset();
         }
     });
 });

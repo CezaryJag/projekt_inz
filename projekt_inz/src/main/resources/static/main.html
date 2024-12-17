@@ -54,7 +54,7 @@
                 <input type="password" id="password" placeholder="Password" required>
                 <div class="form-actions">
                     <label><input type="checkbox" id="remember-me"> Remember me</label>
-                    <a href="#">Forgot password?</a>
+                    <a href="#" id="show_forgot">Forgot password?</a>
                 </div>
                 <button type="submit">Login</button>
                 <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
@@ -69,6 +69,12 @@
                 <input type="text" id="phone" placeholder="Numer telefonu" required>
                 <button type="submit">Zarejestruj się</button>
                 <p><a href="#" id="show-login">Masz już konto? Zaloguj się</a></p>
+            </form>
+            <form id="reset-password-form" class="modal-form">
+                <h2>Reset Password</h2>
+                <input type="email" id="reset-email" placeholder="Enter your email" required>
+                <button type="submit" id="sendResetLink">Send Reset Link</button>
+                <p><a href="#" id="back-to-login">Back to Login</a></p>
             </form>
         </div>
     </div>

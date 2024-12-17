@@ -4,15 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeLoginBtn = document.getElementById('close-login');
     const registerForm = document.getElementById('register-form');
     const loginForm = document.getElementById('login-form');
+    const resetPasswordForm = document.getElementById('reset-password-form');
     const showRegisterLink = document.getElementById('show-register');
     const showLoginLink = document.getElementById('show-login');
     const servicesBtn = document.getElementById('services-btn');
+    const forgotPasswordLink = document.getElementById('show_forgot');
+    const backToLoginLink = document.getElementById('back-to-login');
 
     // Open login modal
     loginBtn.addEventListener('click', () => {
         loginModal.style.display = 'flex';
         loginForm.classList.add('active');
         registerForm.classList.remove('active');
+        resetPasswordForm.classList.remove('active');
     });
 
     // Close login modal
@@ -24,10 +28,26 @@ document.addEventListener('DOMContentLoaded', () => {
     showRegisterLink.addEventListener('click', () => {
         loginForm.classList.remove('active');
         registerForm.classList.add('active');
+        resetPasswordForm.classList.remove('active');
     });
 
     showLoginLink.addEventListener('click', () => {
         registerForm.classList.remove('active');
+        loginForm.classList.add('active');
+        resetPasswordForm.classList.remove('active');
+    });
+
+    // Open reset password form
+    forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.classList.remove('active');
+        resetPasswordForm.classList.add('active');
+    });
+
+    // Back to login from reset password form
+    backToLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetPasswordForm.classList.remove('active');
         loginForm.classList.add('active');
     });
 
@@ -162,6 +182,29 @@ document.addEventListener('DOMContentLoaded', () => {
             loginForm.classList.add('active');
             registerForm.classList.remove('active');
             loginForm.reset();
+        }
+    });
+
+    document.querySelector('#sendResetLink').addEventListener('click', function () {
+        const email = document.querySelector('#reset-email').value; // Pobiera wartość e-maila
+
+        if (email) { // Sprawdzenie czy email nie jest pusty
+            fetch(`/api/auth/reset-password?email=${encodeURIComponent(email)}`, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Reset link sent to your email.');
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+        } else {
+            alert('Please enter a valid email address.');
         }
     });
 });

@@ -21,23 +21,64 @@
         <div class="tab active" id="tab-general">Ogólne</div>
     </div>
     <section id="general-section" class="tab-content">
-        <div class="car-list-container">
-            <h2>Lista Samochodów</h2>
-            <table id="car-list" class="car-table">
-                <thead>
-                <tr>
-                    <th>Model</th>
-                    <th>Numer Rejestracyjny</th>
-                    <th>Rok</th>
-                    <th>Status</th>
-                    <th>Akcje</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Wiersze samochodów będą dodawane dynamicznie -->
-                </tbody>
-            </table>
-            <button id="add-car-btn">Dodaj Auto</button>
+        <div class="content-container">
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label for="filter-year-from">Rok (od):</label>
+                    <input type="number" id="filter-year-from" placeholder="Od">
+                    <label for="filter-year-to">Rok (do):</label>
+                    <input type="number" id="filter-year-to" placeholder="Do">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-milage-from">Przebieg (od):</label>
+                    <input type="number" id="filter-milage-from" placeholder="Od">
+                    <label for="filter-milage-to">Przebieg (do):</label>
+                    <input type="number" id="filter-milage-to" placeholder="Do">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-color">Kolor:</label>
+                    <input type="text" id="filter-color" placeholder="Kolor">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-status">Status:</label>
+                    <input type="text" id="filter-status" placeholder="Status">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-gearbox-type">Typ Skrzyni Biegów:</label>
+                    <input type="text" id="filter-gearbox-type" placeholder="Typ Skrzyni Biegów">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-gearbox-count">Liczba Biegów:</label>
+                    <input type="number" id="filter-gearbox-count" placeholder="Liczba Biegów">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-fuel-type">Typ Paliwa:</label>
+                    <input type="text" id="filter-fuel-type" placeholder="Typ Paliwa">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-car-model">Model:</label>
+                    <input type="text" id="filter-car-model" placeholder="Model">
+                </div>
+                <button id="apply-filters-btn">Zapisz Filtry</button>
+            </div>
+            <div class="car-list-container">
+                <h2>Lista Samochodów</h2>
+                <table id="car-list" class="car-table">
+                    <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Numer Rejestracyjny</th>
+                        <th>Rok</th>
+                        <th>Status</th>
+                        <th>Akcje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Wiersze samochodów będą dodawane dynamicznie -->
+                    </tbody>
+                </table>
+                <button id="add-car-btn">Dodaj Auto</button>
+            </div>
         </div>
     </section>
     <div class="modal" id="add-car-modal">

@@ -1,12 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.ResetPasswordRequest;
 import com.example.demo.entity.User;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.UserService;
+import io.jsonwebtoken.io.IOException;
+import jakarta.servlet.http.HttpServletResponse;
 import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -107,4 +111,38 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token validation failed");
         }
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email) {
+        boolean emailSent = userService.initiatePasswordReset(email);
+        if (emailSent) {
+            return ResponseEntity.ok("E-mail do resetowania hasła został wysłany.");
+        } else {
+            return ResponseEntity.badRequest().body("Nie znaleziono użytkownika z podanym adresem e-mail.");
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public void resetPasswordForm(@RequestParam String token, HttpServletResponse response) throws IOException, java.io.IOException {
+        if (userService.validateResetToken(token)) {
+            // Przekierowanie wraz z tokenem do strony HTML
+            response.sendRedirect("/resetPasswordHTML.html?token=" + token);
+        } else {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token jest nieprawidłowy lub wygasł.");
+        }
+    }
+
+    @PostMapping("/set-new-password")
+    public ResponseEntity<?> setNewPassword(@RequestBody ResetPasswordRequest request) {
+        String token = request.getToken();
+        String newPassword = request.getNewPassword();
+
+        boolean passwordReset = userService.resetPassword(token, newPassword);
+        if (passwordReset) {
+            return ResponseEntity.ok("Hasło zostało zresetowane.");
+        } else {
+            return ResponseEntity.badRequest().body("Token jest nieprawidłowy lub wygasł.");
+        }
+    }
+
 }

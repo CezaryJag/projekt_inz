@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.ResetToken;
 import com.example.demo.entity.User;
 import com.example.demo.entity.VerificationToken;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VerificationTokenRepository;
+import com.example.demo.repository.ResetTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,14 +22,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final VerificationTokenRepository tokenRepository;
+    private final ResetTokenRepository resetTokenRepository;
 
     @Autowired
     private JavaMailSender mailSender;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, VerificationTokenRepository tokenRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, VerificationTokenRepository tokenRepository, ResetTokenRepository resetTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
+        this.resetTokenRepository = resetTokenRepository;
     }
 
     public User registerUser(String name, String surname, String email, String password, String role, String address, String phoneNumber) {
@@ -128,5 +132,66 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public boolean initiatePasswordReset(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Generowanie tokenu do resetu hasła
+            ResetToken resetToken = new ResetToken();
+            resetToken.setUser(user);
+            resetToken.setToken(UUID.randomUUID().toString());
+            resetToken.setExpiryDate(60); // Token ważny przez 60 minut
+            resetTokenRepository.save(resetToken);
+
+            // Wysyłanie e-maila z linkiem do resetowania hasła
+            sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
+            return true;
+        }
+        return false;
+    }
+
+    private void sendPasswordResetEmail(String email, String token) {
+        String subject = "Resetowanie hasła";
+        String resetUrl = "http://localhost:8080/api/auth/reset-password?token=" + token;
+        String message = "Kliknij w poniższy link, aby zresetować swoje hasło:\n" + resetUrl;
+
+        SimpleMailMessage emailMessage = new SimpleMailMessage();
+        emailMessage.setTo(email);
+        emailMessage.setSubject(subject);
+        emailMessage.setText(message);
+
+        mailSender.send(emailMessage);
+    }
+
+    public boolean validateResetToken(String token) {
+        Optional<ResetToken> optionalToken = resetTokenRepository.findByToken(token);
+        if (optionalToken.isPresent() && !optionalToken.get().isExpired()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean resetPassword(String token, String newPassword) {
+        Optional<ResetToken> optionalToken = resetTokenRepository.findByToken(token);
+
+        if (optionalToken.isPresent() && !optionalToken.get().isExpired()) {
+            ResetToken resetToken = optionalToken.get();
+            User user = resetToken.getUser();
+
+            // Szyfrowanie nowego hasła
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            user.setPassword(encodedPassword);
+            userRepository.save(user);
+
+            // Usunięcie tokenu po zresetowaniu hasła
+            resetTokenRepository.delete(resetToken);
+
+            return true;
+        }
+        return false;
     }
 }

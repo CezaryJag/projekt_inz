@@ -8,6 +8,7 @@ import com.example.demo.repository.CarRepository;
 import com.example.demo.repository.MaintenanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,6 +27,60 @@ public class CarService {
 
     public List<Car> getAllCars() {
         return carRepository.findAll();
+    }
+
+    public List<Car> getCarsByFilter(
+            String yearFrom,
+            String yearTo,
+            String milageFrom,
+            String milageTo,
+            String color,
+            String status,
+            String gearType,
+            String gearCount,
+            //String fuelType,
+            String carModel){
+        /*if ((yearFrom == null || yearFrom.isEmpty()) && (yearTo == null || yearTo.isEmpty())) {
+            return getAllCars();
+        }*/
+        if (yearFrom == null || yearFrom.isEmpty()){
+            yearFrom = "0";
+        }
+        if (yearTo == null || yearTo.isEmpty()){
+            yearTo = "10000";
+        }
+        if (milageFrom == null || milageFrom.isEmpty()){
+            milageFrom = "0";
+        }
+        if (milageTo == null || milageTo.isEmpty()){
+            milageTo = "1000000";
+        }
+        if (color == null || color.isEmpty()){
+            color = null;
+        }
+        if (status == null || status.isEmpty()){
+            status = null;
+        }
+        if (gearType == null || gearType.isEmpty()){
+            gearType = null;
+        }
+        if (gearCount == null || gearCount.isEmpty()){
+            gearCount = null;
+        }
+        if (carModel == null || carModel.isEmpty()){
+            carModel = null;
+        }
+        return carRepository.findByFilters(
+                yearFrom,
+                yearTo,
+                milageFrom,
+                milageTo,
+                color,
+                status,
+                gearType,
+                gearCount,
+                //fuelType,
+                carModel);
     }
 
     public Car saveCar(Car car) {

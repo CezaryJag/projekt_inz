@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Fetch and display cars
-    async function fetchCars() {
+    async function fetchCars(filters = {}) {
         const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to access this data.');
@@ -81,27 +81,32 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         try {
-            const response = await fetch('/cars', {
+            // Convert filters to query string
+            const queryString = new URLSearchParams(filters).toString();
+            const response = await fetch(`/cars/filter?${queryString}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
+
             if (response.status === 401) {
                 alert('Session expired or invalid token. Please log in again.');
                 localStorage.removeItem('authToken');
                 window.location.href = 'main.html';
                 return;
             }
+
             if (response.ok) {
                 const cars = await response.json();
                 carList.innerHTML = ''; // Clear the table before adding new rows
                 cars.forEach(addCarToTable);
-            }else {
+            } else {
                 alert('Failed to fetch cars.');
             }
         } catch (error) {
             console.error('Error:', error);
+            alert('An error occurred while fetching cars');
         }
     }
 
@@ -256,6 +261,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return true;
+    }
+
+    document.getElementById('apply-filters-btn').addEventListener('click', () => {
+        const filters = getFilters();
+        fetchCars(filters);
+    });
+    function getFilters() {
+        const filters = {};
+        const yearFrom = document.getElementById('filter-year-from').value;
+        const yearTo = document.getElementById('filter-year-to').value;
+        const milageFrom = document.getElementById('filter-milage-from').value;
+        const milageTo = document.getElementById('filter-milage-to').value;
+        const color = document.getElementById('filter-color').value;
+        const status = document.getElementById('filter-status').value;
+        const gearType = document.getElementById('filter-gearbox-type').value;
+        const gearCount = document.getElementById('filter-gearbox-count').value;
+        //const fuelType = document.getElementById('filter-fuel-type').value;
+        const carModel = document.getElementById('filter-car-model').value;
+        if (yearFrom) filters.yearFrom = yearFrom;
+        if (yearTo) filters.yearTo = yearTo;
+        if (milageFrom) filters.milageFrom = milageFrom;
+        if (milageTo) filters.milageTo = milageTo;
+        if (color) filters.color = color;
+        if (status) filters.status = status;
+        if (gearType) filters.gearboxType = gearType;
+        if (gearCount) filters.gearboxCount = gearCount;
+        //if (fuelType) filters.fuelType = fuelType;
+        if (carModel) filters.carModel = carModel;
+
+        return filters;
     }
 
     fetchCars();

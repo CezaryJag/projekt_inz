@@ -50,14 +50,14 @@ public class CarController {
     public ResponseEntity<List<Car>> getCarsByFilters(
             @RequestParam(required = false) String yearFrom,
             @RequestParam(required = false) String yearTo,
-            @RequestBody(required = false) String milageFrom,
-            @RequestBody(required = false) String milageTo,
-            @RequestBody(required = false) String color,
-            @RequestBody(required = false) String status,
-            @RequestBody(required = false) String gearType,
-            @RequestBody(required = false) String gearCount,
+            @RequestParam(required = false) String milageFrom,
+            @RequestParam(required = false) String milageTo,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String gearType,
+            @RequestParam(required = false) String gearCount,
             //@RequestBody(required = false) String fuelType,
-            @RequestBody(required = false) String carModel
+            @RequestParam(required = false) String carModel
     ) {
         // Obsługa null dla parametrów (ustawienie pustego stringa lub domyślnej wartości)
         List<Car> filteredCars = carService.getCarsByFilter(yearFrom,yearTo,milageFrom,milageTo,color,

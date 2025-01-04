@@ -72,6 +72,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    async function fetchColors() {
+        try {
+            const response = await fetch('/colors');
+            if (response.ok) {
+                const colors = await response.json();
+                populateColorDropdowns(colors);
+            } else {
+                console.error('Failed to fetch colors');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateColorDropdowns(colors) {
+        const colorDropdowns = document.querySelectorAll('#car-color, #details-color, #filter-color');
+        colorDropdowns.forEach(dropdown => {
+            dropdown.innerHTML = '<option value="">Wybierz kolor</option>';
+            colors.forEach(color => {
+                const option = document.createElement('option');
+                option.value = color.colorName;
+                option.textContent = color.colorName;
+                dropdown.appendChild(option);
+            });
+        });
+    }
+
+    fetchColors();
+
+    async function fetchCarModels() {
+        try {
+            const response = await fetch('/car-models');
+            if (response.ok) {
+                const carModels = await response.json();
+                populateCarModelDropdowns(carModels);
+            } else {
+                console.error('Failed to fetch car models');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateCarModelDropdowns(carModels) {
+        const carModelDropdowns = document.querySelectorAll('#car-model, #details-model, #filter-car-model');
+        carModelDropdowns.forEach(dropdown => {
+            dropdown.innerHTML = '<option value="">Wybierz model</option>';
+            carModels.forEach(carModel => {
+                const option = document.createElement('option');
+                option.value = carModel.modelName;
+                option.textContent = carModel.modelName;
+                dropdown.appendChild(option);
+            });
+        });
+    }
+
+    fetchCarModels();
+
+
     // Fetch and display cars
     async function fetchCars(filters = {}) {
         const token = localStorage.getItem('authToken');

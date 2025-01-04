@@ -37,15 +37,25 @@
                 </div>
                 <div class="filter-group">
                     <label for="filter-color">Kolor:</label>
-                    <input type="text" id="filter-color" placeholder="Kolor">
+                    <select id="filter-color">
+                        <option value="">Wybierz kolor</option>
+                    </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-status">Status:</label>
-                    <input type="text" id="filter-status" placeholder="Status">
+                    <select id="filter-status">
+                        <option value="">Wybierz status</option>
+                        <option value="dostępny">Dostępny</option>
+                        <option value="niedostępny">Niedostępny</option>
+                    </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-gearbox-type">Typ Skrzyni Biegów:</label>
-                    <input type="text" id="filter-gearbox-type" placeholder="Typ Skrzyni Biegów">
+                    <select id="filter-gearbox-type">
+                        <option value="">Wybierz typ skrzyni biegów</option>
+                        <option value="manual">Manual</option>
+                        <option value="automat">Automat</option>
+                    </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-gearbox-count">Liczba Biegów:</label>
@@ -57,7 +67,9 @@
                 </div>
                 <div class="filter-group">
                     <label for="filter-car-model">Model:</label>
-                    <input type="text" id="filter-car-model" placeholder="Model">
+                    <select id="filter-car-model">
+                        <option value="">Wybierz model</option>
+                    </select>
                 </div>
                 <button id="apply-filters-btn">Zapisz Filtry</button>
             </div>
@@ -66,6 +78,7 @@
                 <table id="car-list" class="car-table">
                     <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all-cars"></th>
                         <th>Model</th>
                         <th>Numer Rejestracyjny</th>
                         <th>Rok</th>
@@ -78,22 +91,46 @@
                     </tbody>
                 </table>
                 <button id="add-car-btn">Dodaj Auto</button>
+                <button id="create-group-btn">Utwórz Grupę</button>
+                <button id="add-to-group-btn">Dodaj do Grupy</button>
             </div>
         </div>
     </section>
+    <div class="modal" id="create-group-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-create-group">&times;</span>
+            <h2>Utwórz Grupę</h2>
+            <form id="create-group-form">
+                <input type="text" id="group-name" placeholder="Nazwa Grupy" required>
+                <button type="submit">Utwórz</button>
+            </form>
+        </div>
+    </div>
     <div class="modal" id="add-car-modal">
         <div class="modal-content">
             <span class="close-btn" id="close-add-car">&times;</span>
             <h2>Dodaj Auto</h2>
             <form id="add-car-form">
-                <input type="text" id="car-model" placeholder="Model" required>
+                <select id="car-model" required>
+                    <option value="">Wybierz model</option>
+                </select>
                 <input type="number" id="car-year" placeholder="Rok" required>
                 <input type="text" id="car-registration" placeholder="Numer rejestracyjny" required>
                 <input type="number" id="car-milage" placeholder="Przebieg" required>
-                <input type="text" id="car-color" placeholder="Kolor" required>
-                <input type="text" id="car-gear-type" placeholder="Typ Skrzyni Biegów">
+                <select id="car-color" required>
+                    <option value="">Wybierz kolor</option>
+                </select>
+                <select id="car-gear-type" required>
+                    <option value="">Wybierz typ skrzyni biegów</option>
+                    <option value="manual">Manual</option>
+                    <option value="automat">Automat</option>
+                </select>
                 <input type="number" id="car-gear-count" placeholder="Liczba Biegów">
-                <input type="text" id="car-status" placeholder="Status">
+                <select id="car-status" required>
+                    <option value="">Wybierz status</option>
+                    <option value="dostępny">Dostępny</option>
+                    <option value="niedostępny">Niedostępny</option>
+                </select>
                 <h3>Przegląd</h3>
                 <div class="date-fields">
                     <label for="maintenance-date">od:</label>
@@ -113,14 +150,24 @@
             <h2>Szczegóły Auta</h2>
             <form id="details-form">
                 <input type="hidden" id="details-id">
-                <input type="text" id="details-model" placeholder="Model" required>
+                <select id="details-model" required>
+                    <option value="">Wybierz model</option>
+                </select>
                 <input type="number" id="details-year" placeholder="Rok" required>
                 <input type="text" id="details-registration" placeholder="Numer rejestracyjny" required>
                 <input type="number" id="details-milage" placeholder="Przebieg" required>
-                <input type="text" id="details-color" placeholder="Kolor" required>
-                <input type="text" id="details-gear-type" placeholder="Typ Skrzyni Biegów">
+                <select id="details-color" required>
+                    <option value="">Wybierz kolor</option>
+                </select>
+                <select id="details-gear-type" required>
+                    <option value="manual">Manual</option>
+                    <option value="automat">Automat</option>
+                </select>
                 <input type="number" id="details-gear-count" placeholder="Liczba Biegów">
-                <input type="text" id="details-status" placeholder="Status">
+                <select id="details-status" required>
+                    <option value="dostępny">Dostępny</option>
+                    <option value="niedostępny">Niedostępny</option>
+                </select>
                 <h3>Przegląd</h3>
                 <div class="date-fields">
                     <label for="details-maintenance-date">od:</label>

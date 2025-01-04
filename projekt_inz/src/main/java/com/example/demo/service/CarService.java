@@ -1,14 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Car;
-import com.example.demo.entity.CarModel;
-import com.example.demo.entity.Maintenance;
+import com.example.demo.entity.*;
 import com.example.demo.repository.CarModelRepository;
 import com.example.demo.repository.CarRepository;
+import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.MaintenanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,7 +18,13 @@ public class CarService {
     private CarRepository carRepository;
 
     @Autowired
+    private CarGroupService carGroupService;
+    
+    @Autowired
     private CarModelRepository carModelRepository;
+
+    @Autowired
+    private ColorRepository colorRepository;
 
     @Autowired
     private MaintenanceRepository maintenanceRepository;
@@ -38,36 +42,32 @@ public class CarService {
             String status,
             String gearType,
             String gearCount,
-            //String fuelType,
-            String carModel){
-        /*if ((yearFrom == null || yearFrom.isEmpty()) && (yearTo == null || yearTo.isEmpty())) {
-            return getAllCars();
-        }*/
-        if (yearFrom == null || yearFrom.isEmpty()){
+            String carModel) {
+        if (yearFrom == null || yearFrom.isEmpty()) {
             yearFrom = "0";
         }
-        if (yearTo == null || yearTo.isEmpty()){
+        if (yearTo == null || yearTo.isEmpty()) {
             yearTo = "10000";
         }
-        if (milageFrom == null || milageFrom.isEmpty()){
+        if (milageFrom == null || milageFrom.isEmpty()) {
             milageFrom = "0";
         }
-        if (milageTo == null || milageTo.isEmpty()){
+        if (milageTo == null || milageTo.isEmpty()) {
             milageTo = "1000000";
         }
-        if (color == null || color.isEmpty()){
+        if (color == null || color.isEmpty()) {
             color = null;
         }
-        if (status == null || status.isEmpty()){
+        if (status == null || status.isEmpty()) {
             status = null;
         }
-        if (gearType == null || gearType.isEmpty()){
+        if (gearType == null || gearType.isEmpty()) {
             gearType = null;
         }
-        if (gearCount == null || gearCount.isEmpty()){
+        if (gearCount == null || gearCount.isEmpty()) {
             gearCount = null;
         }
-        if (carModel == null || carModel.isEmpty()){
+        if (carModel == null || carModel.isEmpty()) {
             carModel = null;
         }
         return carRepository.findByFilters(
@@ -79,8 +79,8 @@ public class CarService {
                 status,
                 gearType,
                 gearCount,
-                //fuelType,
                 carModel);
+
     }
 
     public Car saveCar(Car car) {
@@ -96,6 +96,18 @@ public class CarService {
         car.setCarModel(carModel);
         car.setModelId(carModel.getModelId());
 
+        Color color = car.getColor();
+        Color existingColor = colorRepository.findByColorName(color.getColorName());
+
+        if (existingColor == null) {
+            color = colorRepository.save(color);
+        } else {
+            color = existingColor;
+        }
+
+        car.setColor(color);
+        car.setColorId(color.getColorId());
+
         Maintenance maintenance = car.getMaintenance();
         if (maintenance != null) {
             Maintenance existingMaintenance = maintenanceRepository.findByMaintenanceDateAndCost(
@@ -107,6 +119,12 @@ public class CarService {
             }
             car.setMaintenance(maintenance);
             car.setMaintenanceId(maintenance.getMaintenanceId());
+        }
+
+        // Ensure the group is set correctly
+        if (car.getGroupId() != null) {
+            CarGroup carGroup = carGroupService.getCarGroupById(car.getGroupId());
+            car.setCarGroup(carGroup);
         }
 
         return carRepository.save(car);
@@ -121,6 +139,12 @@ public class CarService {
                 .orElseThrow(() -> new NoSuchElementException("CarModel not found"));
         car.setCarModel(carModel);
 
+        Color color = colorRepository.findByColorName(car.getColor().getColorName());
+        if (color == null) {
+            color = colorRepository.save(car.getColor());
+        }
+        car.setColor(color);
+
         Maintenance maintenance = car.getMaintenance();
         if (maintenance != null) {
             Maintenance existingMaintenance = maintenanceRepository.findByMaintenanceDateAndCost(
@@ -130,7 +154,8 @@ public class CarService {
             } else {
                 maintenance = existingMaintenance;
             }
-            car.setMaintenance(existingMaintenance);
+            car.setMaintenance(maintenance);
+            car.setMaintenanceId(maintenance.getMaintenanceId());
         }
 
         return carRepository.save(car);

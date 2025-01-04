@@ -13,8 +13,8 @@ public interface CarRepository extends JpaRepository<Car, Long> {
             + "(:yearTo IS NULL OR c.productionYear <= CAST(:yearTo AS int)) AND "
             + "(:mileageFrom IS NULL OR c.milage >= CAST(:mileageFrom AS int)) AND "
             + "(:mileageTo IS NULL OR c.milage <= CAST(:mileageTo AS int)) AND "
-            + "(:color IS NULL OR :color = '' OR c.color LIKE %:color%) AND "
-            + "(:status IS NULL OR :status = '' OR c.status LIKE %:status%) AND "
+            + "(:color IS NULL OR :color = '' OR c.color.colorName LIKE %:color%) AND "
+            + "(:status IS NULL OR :status = '' OR c.status = :status) AND "
             + "(:gearboxType IS NULL OR :gearboxType = '' OR c.gearType LIKE %:gearboxType%) AND "
             + "(:gearboxCount IS NULL OR :gearboxCount = '' OR c.gearCount = CAST(:gearboxCount AS int)) AND "
             + "(:carModel IS NULL OR :carModel = '' OR c.carModel.modelName LIKE %:carModel%)")

@@ -41,8 +41,9 @@ public class AuthController {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             return ResponseEntity.badRequest().body("Password is required");
         }
-
-
+        if (!isValidPassword(user.getPassword())) {
+            return ResponseEntity.badRequest().body("Password must be at least 6 characters long and contain at least one uppercase letter");
+        }
 
         // Save the user to the database
         userService.registerUser(
@@ -55,6 +56,13 @@ public class AuthController {
                 user.getPhoneNumber()
         );
         return ResponseEntity.ok("User registered successfully, check your email");
+    }
+
+    private boolean isValidPassword(String password) {
+        if (password == null) {
+            return false;
+        }
+        return password.length() >= 6 && password.chars().anyMatch(Character::isUpperCase);
     }
 
     @PostMapping("/login")

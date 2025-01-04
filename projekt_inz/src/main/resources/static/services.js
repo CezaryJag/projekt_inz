@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailsModal = document.getElementById('details-modal');
     const closeDetails = document.getElementById('close-details');
     const detailsForm = document.getElementById('details-form');
+    const createGroupBtn = document.getElementById('create-group-btn');
+    const createGroupModal = document.getElementById('create-group-modal');
+    const closeCreateGroup = document.getElementById('close-create-group');
+    const createGroupForm = document.getElementById('create-group-form');
+    const addToGroupBtn = document.getElementById('add-to-group-btn');
+    const selectAllCarsCheckbox = document.getElementById('select-all-cars');
     const token = localStorage.getItem('authToken');
 
     // Open modal
@@ -21,6 +27,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeDetails.addEventListener('click', () => {
         detailsModal.style.display = 'none';
+    });
+
+    // Open create group modal
+    createGroupBtn.addEventListener('click', () => {
+        createGroupModal.style.display = 'flex';
+    });
+
+    // Close create group modal
+    closeCreateGroup.addEventListener('click', () => {
+        createGroupModal.style.display = 'none';
+    });
+
+    // Create new group
+    createGroupForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const groupName = document.getElementById('group-name').value;
+
+        try {
+            const response = await fetch('/cars/groups', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ groupName })
+            });
+
+            if (response.ok) {
+                alert('Group created successfully');
+                createGroupModal.style.display = 'none';
+                createGroupForm.reset();
+            } else {
+                alert('Failed to create group');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while creating the group');
+        }
+    });
+
+    // Add selected cars to group
+    addToGroupBtn.addEventListener('click', async () => {
+        const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
+            .map(checkbox => checkbox.dataset.carId);
+
+        if (selectedCarIds.length === 0) {
+            alert('No cars selected');
+            return;
+        }
+
+        const groupId = prompt('Enter the group ID to add the selected cars to:');
+        if (!groupId) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/cars/groups/${groupId}/add-cars`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedCarIds)
+            });
+
+            if (response.ok) {
+                alert('Cars added to group successfully');
+            } else {
+                alert('Failed to add cars to group');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding cars to the group');
+        }
+    });
+
+    // Select all cars
+    selectAllCarsCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('.select-car-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCarsCheckbox.checked;
+        });
     });
 
     // Add new car
@@ -72,6 +158,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    async function fetchColors() {
+        try {
+            const response = await fetch('/colors');
+            if (response.ok) {
+                const colors = await response.json();
+                populateColorDropdowns(colors);
+            } else {
+                console.error('Failed to fetch colors');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateColorDropdowns(colors) {
+        const colorDropdowns = document.querySelectorAll('#car-color, #details-color, #filter-color');
+        colorDropdowns.forEach(dropdown => {
+            dropdown.innerHTML = '<option value="">Wybierz kolor</option>';
+            colors.forEach(color => {
+                const option = document.createElement('option');
+                option.value = color.colorName;
+                option.textContent = color.colorName;
+                dropdown.appendChild(option);
+            });
+        });
+    }
+
+    fetchColors();
+
+    async function fetchCarModels() {
+        try {
+            const response = await fetch('/car-models');
+            if (response.ok) {
+                const carModels = await response.json();
+                populateCarModelDropdowns(carModels);
+            } else {
+                console.error('Failed to fetch car models');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateCarModelDropdowns(carModels) {
+        const carModelDropdowns = document.querySelectorAll('#car-model, #details-model, #filter-car-model');
+        carModelDropdowns.forEach(dropdown => {
+            dropdown.innerHTML = '<option value="">Wybierz model</option>';
+            carModels.forEach(carModel => {
+                const option = document.createElement('option');
+                option.value = carModel.modelName;
+                option.textContent = carModel.modelName;
+                dropdown.appendChild(option);
+            });
+        });
+    }
+
+    fetchCarModels();
+
     // Fetch and display cars
     async function fetchCars(filters = {}) {
         const token = localStorage.getItem('authToken');
@@ -89,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Authorization': `Bearer ${token}`
                 }
             });
+            console.log('Filters applied:', filters);
 
             if (response.status === 401) {
                 alert('Session expired or invalid token. Please log in again.');
@@ -113,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addCarToTable(car) {
         const row = document.createElement('tr');
         row.innerHTML = `
+            <td><input type="checkbox" class="select-car-checkbox" data-car-id="${car.vehicleId}"></td>
             <td>${car.carModel.modelName}</td>
             <td>${car.registrationNumber}</td>
             <td>${car.productionYear}</td>
@@ -169,14 +315,22 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('details-year').value = car.productionYear;
         document.getElementById('details-registration').value = car.registrationNumber;
         document.getElementById('details-milage').value = car.milage;
-        document.getElementById('details-color').value = car.color;
+        document.getElementById('details-color').value = car.color.colorName;
         document.getElementById('details-gear-type').value = car.gearType;
         document.getElementById('details-gear-count').value = car.gearCount;
         document.getElementById('details-status').value = car.status;
-        document.getElementById('details-maintenance-date').value = formatDate(car.maintenance.maintenanceDate);
-        document.getElementById('details-maintenance-end-date').value = formatDate(car.maintenance.maintenanceEndDate);
-        document.getElementById('details-maintenance-cost').value = car.maintenance.cost;
-        document.getElementById('details-maintenance-details').value = car.maintenance.details;
+
+        if (car.maintenance) {
+            document.getElementById('details-maintenance-date').value = formatDate(car.maintenance.maintenanceDate);
+            document.getElementById('details-maintenance-end-date').value = formatDate(car.maintenance.maintenanceEndDate);
+            document.getElementById('details-maintenance-cost').value = car.maintenance.cost;
+            document.getElementById('details-maintenance-details').value = car.maintenance.details;
+        } else {
+            document.getElementById('details-maintenance-date').value = '';
+            document.getElementById('details-maintenance-end-date').value = '';
+            document.getElementById('details-maintenance-cost').value = '';
+            document.getElementById('details-maintenance-details').value = '';
+        }
 
         detailsModal.style.display = 'flex';
     }
@@ -186,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0];
     }
-    
+
     detailsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -226,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             productionYear: parseInt(form.querySelector('#car-year, #details-year').value),
             registrationNumber: form.querySelector('#car-registration, #details-registration').value,
             milage: parseInt(form.querySelector('#car-milage, #details-milage').value),
-            color: form.querySelector('#car-color, #details-color').value,
+            color: { colorName: form.querySelector('#car-color, #details-color').value },
             gearType: form.querySelector('#car-gear-type, #details-gear-type').value,
             gearCount: parseInt(form.querySelector('#car-gear-count, #details-gear-count').value),
             status: form.querySelector('#car-status, #details-status').value,
@@ -267,6 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filters = getFilters();
         fetchCars(filters);
     });
+
     function getFilters() {
         const filters = {};
         const yearFrom = document.getElementById('filter-year-from').value;
@@ -277,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const status = document.getElementById('filter-status').value;
         const gearType = document.getElementById('filter-gearbox-type').value;
         const gearCount = document.getElementById('filter-gearbox-count').value;
-        //const fuelType = document.getElementById('filter-fuel-type').value;
         const carModel = document.getElementById('filter-car-model').value;
         if (yearFrom) filters.yearFrom = yearFrom;
         if (yearTo) filters.yearTo = yearTo;
@@ -287,7 +441,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (status) filters.status = status;
         if (gearType) filters.gearboxType = gearType;
         if (gearCount) filters.gearboxCount = gearCount;
-        //if (fuelType) filters.fuelType = fuelType;
         if (carModel) filters.carModel = carModel;
 
         return filters;

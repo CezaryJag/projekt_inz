@@ -39,15 +39,26 @@ public class Car {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "color")
-    private String color;
-
     @Column(name = "maintenance_id")
     private Integer maintenanceId;
 
     @ManyToOne
     @JoinColumn(name = "maintenance_id", referencedColumnName = "maintenance_id", insertable = false, updatable = false)
     private Maintenance maintenance;
+
+    @Column(name = "color_id", nullable = false)
+    private Integer colorId;
+
+    @ManyToOne
+    @JoinColumn(name = "color_id", referencedColumnName = "color_id", insertable = false, updatable = false)
+    private Color color;
+
+    @Column(name = "group_id")
+    private Long groupId;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id", referencedColumnName = "group_id", insertable = false, updatable = false)
+    private CarGroup carGroup;
 
     // Getters and setters
     public Long getVehicleId() {
@@ -130,14 +141,6 @@ public class Car {
         this.status = status;
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public Integer getMaintenanceId() {
         return maintenanceId;
     }
@@ -153,4 +156,37 @@ public class Car {
     public void setMaintenance(Maintenance maintenance) {
         this.maintenance = maintenance;
     }
+
+    public Integer getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(Integer colorId) {
+        this.colorId = colorId;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public CarGroup getCarGroup() {
+        return carGroup;
+    }
+
+    public void setCarGroup(CarGroup carGroup) {
+        this.carGroup = carGroup;
+    }
+
 }

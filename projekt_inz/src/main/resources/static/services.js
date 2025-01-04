@@ -398,9 +398,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    document.getElementById('apply-filters-btn').addEventListener('click', () => {
-        const filters = getFilters();
-        fetchCars(filters);
+    const filterElements = document.querySelectorAll('.filter-group');
+    filterElements.forEach(element => {
+        element.addEventListener('input', () => {
+            const filters = getFilters();
+            fetchCars(filters);
+        });
     });
 
     function getFilters() {

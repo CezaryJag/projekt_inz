@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailsModal = document.getElementById('details-modal');
     const closeDetails = document.getElementById('close-details');
     const detailsForm = document.getElementById('details-form');
+    const createGroupBtn = document.getElementById('create-group-btn');
+    const addToGroupBtn = document.getElementById('add-to-group-btn');
+    const createGroupModal = document.getElementById('create-group-modal');
+    const closeCreateGroup = document.getElementById('close-create-group');
+    const createGroupForm = document.getElementById('create-group-form');
     const token = localStorage.getItem('authToken');
 
     // Open modal
@@ -23,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
         detailsModal.style.display = 'none';
     });
 
+    closeCreateGroup.addEventListener('click', () => {
+        createGroupModal.style.display = 'none';
+    });
+
     // Add new car
     addCarForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -35,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get form data
         const carData = getCarFormData(addCarForm);
 
-        const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to add a car.');
             window.location.href = 'main.html';
@@ -130,10 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchCarModels();
 
-
     // Fetch and display cars
     async function fetchCars(filters = {}) {
-        const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
@@ -172,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addCarToTable(car) {
         const row = document.createElement('tr');
+        row.dataset.carId = car.vehicleId; // Add data-car-id attribute
         row.innerHTML = `
             <td><input type="checkbox" class="select-car-checkbox"></td>
             <td>${car.carModel.modelName}</td>
@@ -192,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const removeBtn = row.querySelector('.remove-btn');
         removeBtn.addEventListener('click', async () => {
-            const token = localStorage.getItem('authToken');
             if (!token) {
                 alert('You must be logged in to add a car.');
                 window.location.href = 'main.html';
@@ -361,6 +367,63 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Selected gear type: ", gearType);
         return filters;
     }
+
+    createGroupBtn.addEventListener('click', () => {
+        createGroupModal.style.display = 'flex';
+    });
+
+    createGroupForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const groupName = document.getElementById('group-name').value;
+
+        try {
+            const response = await fetch('/car-groups', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ groupName })
+            });
+
+            if (response.ok) {
+                createGroupModal.style.display = 'none';
+                createGroupForm.reset();
+            } else {
+                alert('Failed to create group');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while creating the group');
+        }
+    });
+
+    addToGroupBtn.addEventListener('click', async () => {
+        const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
+            .map(checkbox => checkbox.closest('tr').dataset.carId);
+
+        const groupId = prompt('Enter the group ID to add selected cars to:');
+
+        try {
+            const response = await fetch(`/car-groups/${groupId}/cars`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(selectedCarIds)
+            });
+
+            if (response.ok) {
+                alert('Cars added to group successfully');
+            } else {
+                alert('Failed to add cars to group');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding cars to the group');
+        }
+    });
 
     fetchCars();
 });

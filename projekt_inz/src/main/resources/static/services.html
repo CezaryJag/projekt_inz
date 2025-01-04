@@ -75,11 +75,10 @@
             </div>
             <div class="car-list-container">
                 <h2>Lista Samochodów</h2>
-                <button id="create-group-btn">Utwórz Grupę</button>
                 <table id="car-list" class="car-table">
                     <thead>
                     <tr>
-                        <th></th>
+                        <th><input type="checkbox" id="select-all-cars"></th>
                         <th>Model</th>
                         <th>Numer Rejestracyjny</th>
                         <th>Rok</th>
@@ -92,9 +91,21 @@
                     </tbody>
                 </table>
                 <button id="add-car-btn">Dodaj Auto</button>
+                <button id="create-group-btn">Utwórz Grupę</button>
+                <button id="add-to-group-btn">Dodaj do Grupy</button>
             </div>
         </div>
     </section>
+    <div class="modal" id="create-group-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-create-group">&times;</span>
+            <h2>Utwórz Grupę</h2>
+            <form id="create-group-form">
+                <input type="text" id="group-name" placeholder="Nazwa Grupy" required>
+                <button type="submit">Utwórz</button>
+            </form>
+        </div>
+    </div>
     <div class="modal" id="add-car-modal">
         <div class="modal-content">
             <span class="close-btn" id="close-add-car">&times;</span>

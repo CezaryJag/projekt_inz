@@ -12,7 +12,12 @@
         <ul class="nav-links">
             <li><a href="main.html">Home</a></li>
             <li><a href="contact.html">Contact</a></li>
-            <li><a href="services.html">Services</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropbtn" id="services-btn">Services</a>
+                <div class="dropdown-content" id="services-dropdown" style="display: none;">
+                    <!-- Group options will be populated here by JavaScript -->
+                </div>
+            </li>
         </ul>
     </nav>
 </header>
@@ -24,6 +29,8 @@
         <div class="content-container">
             <div class="filter-container">
                 <div class="filter-group">
+                    <div class="filter-group">
+                    </div>
                     <label for="filter-year-from">Rok (od):</label>
                     <input type="number" id="filter-year-from" placeholder="Od">
                     <label for="filter-year-to">Rok (do):</label>

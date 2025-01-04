@@ -7,10 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetPasswordForm = document.getElementById('reset-password-form');
     const showRegisterLink = document.getElementById('show-register');
     const showLoginLink = document.getElementById('show-login');
-    const servicesBtn = document.getElementById('services-btn');
     const forgotPasswordLink = document.getElementById('show_forgot');
     const backToLoginLink = document.getElementById('back-to-login');
-
+    const servicesBtn = document.getElementById('services-btn');
+    const servicesDropdown = document.getElementById('services-dropdown');
+    const token = localStorage.getItem('authToken');
+    
     // Open login modal
     loginBtn.addEventListener('click', () => {
         loginModal.style.display = 'flex';
@@ -103,6 +105,56 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred during registration');
         }
     });
+
+    servicesBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        servicesDropdown.style.display = servicesDropdown.style.display === 'none' ? 'block' : 'none';
+    });
+
+    servicesDropdown.addEventListener('click', (event) => {
+        if (event.target.tagName === 'A') {
+            event.preventDefault(); // Prevent navigation
+            const groupId = event.target.dataset.groupId;
+            if (groupId === 'main') {
+                fetchCars();
+            } else {
+                fetchCarsByGroup(groupId);
+            }
+        }
+    });
+
+    async function fetchGroups() {
+        try {
+            const response = await fetch('/car-groups', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const groups = await response.json();
+                populateGroupDropdown(groups);
+            } else {
+                console.error('Failed to fetch groups');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateGroupDropdown(groups) {
+        servicesDropdown.innerHTML = '<a href="#" data-group-id="main">Main</a>';
+        groups.forEach(group => {
+            const link = document.createElement('a');
+            link.href = '#';
+            link.dataset.groupId = group.groupId;
+            link.textContent = group.groupName;
+            servicesDropdown.appendChild(link);
+        });
+    }
+
+    fetchGroups();
 
     // Handle login
     loginForm.addEventListener('submit', async (e) => {

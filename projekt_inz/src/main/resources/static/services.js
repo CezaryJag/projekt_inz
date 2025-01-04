@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const createGroupModal = document.getElementById('create-group-modal');
     const closeCreateGroup = document.getElementById('close-create-group');
     const createGroupForm = document.getElementById('create-group-form');
+    const servicesBtn = document.getElementById('services-btn');
+    const servicesDropdown = document.getElementById('services-dropdown');
     const token = localStorage.getItem('authToken');
 
     // Open modal
@@ -66,13 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = 'main.html';
                 return;
             }
+
             if (response.ok) {
                 const newCar = await response.json();
                 addCarToTable(newCar);
                 addCarModal.style.display = 'none';
                 addCarForm.reset();
             } else {
-                alert('Failed to add car');
+                alert('Failed to add car.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -138,23 +141,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchCarModels();
 
-    // Fetch and display cars
-    async function fetchCars(filters = {}) {
+    servicesBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        servicesDropdown.style.display = servicesDropdown.style.display === 'none' ? 'block' : 'none';
+    });
+
+    servicesDropdown.addEventListener('click', (event) => {
+        if (event.target.tagName === 'A') {
+            const groupId = event.target.dataset.groupId;
+            if (groupId === 'main') {
+                fetchCars();
+            } else {
+                fetchCarsByGroup(groupId);
+            }
+        }
+    });
+
+
+
+    async function fetchCarsByGroup(groupId) {
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
             return;
         }
         try {
-            // Convert filters to query string
-            const queryString = new URLSearchParams(filters).toString();
-            const response = await fetch(`/cars/filter?${queryString}`, {
+            const response = await fetch(`/car-groups/${groupId}/cars`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log('Filters applied:', filters);
 
             if (response.status === 401) {
                 alert('Session expired or invalid token. Please log in again.');
@@ -165,8 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const cars = await response.json();
-                carList.innerHTML = ''; // Clear the table before adding new rows
-                cars.forEach(addCarToTable);
+                displayCars(cars);
             } else {
                 alert('Failed to fetch cars.');
             }
@@ -176,57 +192,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function addCarToTable(car) {
-        const row = document.createElement('tr');
-        row.dataset.carId = car.vehicleId; // Add data-car-id attribute
-        row.innerHTML = `
-            <td><input type="checkbox" class="select-car-checkbox"></td>
-            <td>${car.carModel.modelName}</td>
-            <td>${car.registrationNumber}</td>
-            <td>${car.productionYear}</td>
-            <td>${car.status}</td>
-            <td>
-                <button class="details-btn" data-id="${car.vehicleId}">Details</button>
-                <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
-            </td>
-        `;
-        carList.appendChild(row);
+    async function fetchCars(filters = {}) {
+        if (!token) {
+            alert('You must be logged in to access this data.');
+            window.location.href = 'main.html';
+            return;
+        }
+        try {
+            const queryString = new URLSearchParams(filters).toString();
+            const response = await fetch(`/cars/filter?${queryString}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-        const detailsBtn = row.querySelector('.details-btn');
-        detailsBtn.addEventListener('click', () => {
-            openDetailsModal(car);
-        });
-
-        const removeBtn = row.querySelector('.remove-btn');
-        removeBtn.addEventListener('click', async () => {
-            if (!token) {
-                alert('You must be logged in to add a car.');
+            if (response.status === 401) {
+                alert('Session expired or invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
                 window.location.href = 'main.html';
                 return;
             }
 
-            try {
-                const response = await fetch(`/cars/${car.vehicleId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.status === 401) {
-                    alert('Session expired or invalid token. Please log in again.');
-                    localStorage.removeItem('authToken');
+            if (response.ok) {
+                const cars = await response.json();
+                displayCars(cars);
+            } else {
+                alert('Failed to fetch cars.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while fetching cars');
+        }
+    }
+
+    function displayCars(cars) {
+        carList.innerHTML = '';
+        cars.forEach(car => {
+            const row = document.createElement('tr');
+            row.dataset.carId = car.vehicleId;
+            row.innerHTML = `
+                <td><input type="checkbox" class="select-car-checkbox"></td>
+                <td>${car.carModel.modelName}</td>
+                <td>${car.registrationNumber}</td>
+                <td>${car.productionYear}</td>
+                <td>${car.status}</td>
+                <td>
+                    <button class="details-btn" data-id="${car.vehicleId}">Details</button>
+                    <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
+                </td>
+            `;
+            carList.appendChild(row);
+
+            const detailsBtn = row.querySelector('.details-btn');
+            detailsBtn.addEventListener('click', () => {
+                openDetailsModal(car);
+            });
+
+            const removeBtn = row.querySelector('.remove-btn');
+            removeBtn.addEventListener('click', async () => {
+                if (!token) {
+                    alert('You must be logged in to add a car.');
                     window.location.href = 'main.html';
                     return;
                 }
-                if (response.ok) {
-                    carList.removeChild(row);
-                } else {
-                    alert('Failed to delete car');
+
+                try {
+                    const response = await fetch(`/cars/${car.vehicleId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.status === 401) {
+                        alert('Session expired or invalid token. Please log in again.');
+                        localStorage.removeItem('authToken');
+                        window.location.href = 'main.html';
+                        return;
+                    }
+
+                    if (response.ok) {
+                        row.remove();
+                    } else {
+                        alert('Failed to remove car.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the car');
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the car');
-            }
+            });
         });
     }
 
@@ -277,17 +332,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/cars/${vehicleId}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(carData)
             });
 
             if (response.ok) {
+                const updatedCar = await response.json();
+                const row = carList.querySelector(`tr[data-car-id="${updatedCar.vehicleId}"]`);
+                row.querySelector('td:nth-child(2)').textContent = updatedCar.carModel.modelName;
+                row.querySelector('td:nth-child(3)').textContent = updatedCar.registrationNumber;
+                row.querySelector('td:nth-child(4)').textContent = updatedCar.productionYear;
+                row.querySelector('td:nth-child(5)').textContent = updatedCar.status;
                 detailsModal.style.display = 'none';
-                fetchCars();
             } else {
-                alert('Failed to update car');
+                alert('Failed to update car.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -354,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const gearType = document.getElementById('filter-gearbox-type').value;
         const gearCount = document.getElementById('filter-gearbox-count').value;
         const carModel = document.getElementById('filter-car-model').value;
-        console.log("Selected gear type: ", gearType);
+
         if (yearFrom) filters.yearFrom = yearFrom;
         if (yearTo) filters.yearTo = yearTo;
         if (milageFrom) filters.milageFrom = milageFrom;
@@ -364,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gearType) filters.gearboxType = gearType;
         if (gearCount) filters.gearboxCount = gearCount;
         if (carModel) filters.carModel = carModel;
-        console.log("Selected gear type: ", gearType);
+
         return filters;
     }
 
@@ -387,10 +447,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
+                const newGroup = await response.json();
+                const link = document.createElement('a');
+                link.href = '#';
+                link.dataset.groupId = newGroup.groupId;
+                link.textContent = newGroup.groupName;
+                servicesDropdown.appendChild(link);
                 createGroupModal.style.display = 'none';
                 createGroupForm.reset();
             } else {
-                alert('Failed to create group');
+                alert('Failed to create group.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -415,9 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                alert('Cars added to group successfully');
+                alert('Cars added to group successfully.');
             } else {
-                alert('Failed to add cars to group');
+                alert('Failed to add cars to group.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -425,5 +491,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    async function fetchGroups() {
+        try {
+            const response = await fetch('/car-groups', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const groups = await response.json();
+                populateGroupDropdown(groups);
+            } else {
+                console.error('Failed to fetch groups');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateGroupDropdown(groups) {
+        servicesDropdown.innerHTML = '<a href="#" data-group-id="main">Main</a>';
+        groups.forEach(group => {
+            const link = document.createElement('a');
+            link.href = '#';
+            link.dataset.groupId = group.groupId;
+            link.textContent = group.groupName;
+            servicesDropdown.appendChild(link);
+        });
+    }
+
+    fetchGroups();
     fetchCars();
 });

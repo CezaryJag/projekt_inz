@@ -438,6 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
     createGroupForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const groupName = document.getElementById('group-name').value;
+        const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
+            .map(checkbox => checkbox.closest('tr').dataset.carId);
 
         try {
             const response = await fetch('/car-groups', {
@@ -455,6 +457,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.href = '#';
                 link.dataset.groupId = newGroup.groupId;
                 link.textContent = newGroup.groupName;
+                const groupId = newGroup.groupId;
+                try {
+                    const response = await fetch(`/car-groups/${groupId}/cars`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(selectedCarIds)
+                    });
+
+                    if (response.ok) {
+                        alert('Cars added to group successfully.');
+                    } else {
+                        alert('Failed to add cars to group.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding cars to the group');
+                }
                 servicesDropdown.appendChild(link);
                 createGroupModal.style.display = 'none';
                 createGroupForm.reset();

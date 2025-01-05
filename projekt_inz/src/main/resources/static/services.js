@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const servicesBtn = document.getElementById('services-btn');
     const servicesDropdown = document.getElementById('services-dropdown');
     const token = localStorage.getItem('authToken');
+    const groupSelect = document.getElementById('group-select');
 
     // Open modal
     addCarBtn.addEventListener('click', () => {
@@ -453,6 +454,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const newGroup = await response.json();
+                const groupSelect = document.getElementById('group-select');
+                const option = document.createElement('option');
+                option.value = newGroup.groupId;
+                option.textContent = newGroup.groupName;
+                groupSelect.appendChild(option);
+
                 const link = document.createElement('a');
                 link.href = '#';
                 link.dataset.groupId = newGroup.groupId;
@@ -493,8 +500,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
             .map(checkbox => checkbox.closest('tr').dataset.carId);
 
-        const groupId = prompt('Enter the group ID to add selected cars to:');
-
+        //const groupId = prompt('Enter the group ID to add selected cars to:');
+        const groupId = document.getElementById('group-select').value;
+        if (!groupId) {
+            alert('Proszę wybrać grupę.');
+            return;
+        }
         try {
             const response = await fetch(`/car-groups/${groupId}/cars`, {
                 method: 'POST',
@@ -538,12 +549,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateGroupDropdown(groups) {
         servicesDropdown.innerHTML = '<a href="#" data-group-id="main">Main</a>';
+        groupSelect.innerHTML = '<option value="">Wybierz grupę</option>';
         groups.forEach(group => {
             const link = document.createElement('a');
             link.href = '#';
             link.dataset.groupId = group.groupId;
             link.textContent = group.groupName;
             servicesDropdown.appendChild(link);
+
+            const option = document.createElement('option');
+            option.value = group.groupId;
+            option.textContent = group.groupName;
+            groupSelect.appendChild(option);
         });
     }
 

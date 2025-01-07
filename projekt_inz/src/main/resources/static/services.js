@@ -145,6 +145,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function addCarToTable(car) {
+        const carList = document.querySelector('#car-list tbody');
+        const row = document.createElement('tr');
+        row.dataset.carId = car.vehicleId;
+        row.innerHTML = `
+        <td><input type="checkbox" class="select-car-checkbox"></td>
+        <td>${car.carModel.modelName}</td>
+        <td>${car.registrationNumber}</td>
+        <td>${car.productionYear}</td>
+        <td>${car.status}</td>
+        <td>
+            <button class="details-btn" data-id="${car.vehicleId}">Details</button>
+            <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
+        </td>
+    `;
+        carList.appendChild(row);
+
+        const detailsBtn = row.querySelector('.details-btn');
+        detailsBtn.addEventListener('click', () => {
+            openDetailsModal(car);
+        });
+
+        const removeBtn = row.querySelector('.remove-btn');
+        removeBtn.addEventListener('click', async () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                alert('You must be logged in to remove a car.');
+                window.location.href = 'main.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/cars/${car.vehicleId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    alert('Session expired or invalid token. Please log in again.');
+                    localStorage.removeItem('authToken');
+                    window.location.href = 'main.html';
+                    return;
+                }
+
+                if (response.ok) {
+                    row.remove();
+                } else {
+                    alert('Failed to remove car.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while removing the car');
+            }
+        });
+    }
+
     document.getElementById('group-search').addEventListener('input', () => {
         const searchTerm = document.getElementById('group-search').value.toLowerCase();
         const rows = document.querySelectorAll('#group-list tbody tr');
@@ -540,10 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.textContent = newGroup.groupName;
                 groupSelect.appendChild(option);
 
-                const link = document.createElement('a');
-                link.href = '#';
-                link.dataset.groupId = newGroup.groupId;
-                link.textContent = newGroup.groupName;
                 const groupId = newGroup.groupId;
                 try {
                     const response = await fetch(`/car-groups/${groupId}/cars`, {
@@ -564,7 +618,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Error:', error);
                     alert('An error occurred while adding cars to the group');
                 }
-                servicesDropdown.appendChild(link);
                 createGroupModal.style.display = 'none';
                 createGroupForm.reset();
             } else {
@@ -580,12 +633,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
             .map(checkbox => checkbox.closest('tr').dataset.carId);
 
-        //const groupId = prompt('Enter the group ID to add selected cars to:');
         const groupId = document.getElementById('group-select').value;
         if (!groupId) {
             alert('Proszę wybrać grupę.');
             return;
         }
+
+        if (!token) {
+            alert('You must be logged in to add cars to a group.');
+            window.location.href = 'main.html';
+            return;
+        }
+
         try {
             const response = await fetch(`/car-groups/${groupId}/cars`, {
                 method: 'POST',
@@ -595,6 +654,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(selectedCarIds)
             });
+
+            if (response.status === 401) {
+                alert('Session expired or invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
+                window.location.href = 'main.html';
+                return;
+            }
 
             if (response.ok) {
                 alert('Cars added to group successfully.');
@@ -641,7 +707,6 @@ document.addEventListener('DOMContentLoaded', () => {
             groupSelect.appendChild(option);
         });
     }
-
     fetchGroups();
     fetchCars();
 });

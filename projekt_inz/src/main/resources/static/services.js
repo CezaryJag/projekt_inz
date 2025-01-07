@@ -100,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
             groupList.appendChild(row);
         });
 
-        // Attach event listeners after adding rows to the DOM
         document.querySelectorAll('.manage-btn').forEach(button => {
             button.addEventListener('click', (event) => {
                 const groupId = event.target.dataset.id;
@@ -221,26 +220,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/colors');
             if (response.ok) {
                 const colors = await response.json();
-                populateColorDropdowns(colors);
+                populateDatalist('filter-color-options', colors.map(color => color.colorName));
+                populateDatalist('add-car-color-options', colors.map(color => color.colorName));
+                populateDatalist('details-car-color-options', colors.map(color => color.colorName));
             } else {
                 console.error('Failed to fetch colors');
             }
         } catch (error) {
             console.error('Error:', error);
         }
-    }
-
-    function populateColorDropdowns(colors) {
-        const colorDropdowns = document.querySelectorAll('#car-color, #details-color, #filter-color');
-        colorDropdowns.forEach(dropdown => {
-            dropdown.innerHTML = '<option value="">Wybierz kolor</option>';
-            colors.forEach(color => {
-                const option = document.createElement('option');
-                option.value = color.colorName;
-                option.textContent = color.colorName;
-                dropdown.appendChild(option);
-            });
-        });
     }
 
     fetchColors();
@@ -250,7 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/car-models');
             if (response.ok) {
                 const carModels = await response.json();
-                populateCarModelDropdowns(carModels);
+                populateDatalist('filter-car-model-options', carModels.map(model => model.modelName));
+                populateDatalist('add-car-model-options', carModels.map(model => model.modelName));
+                populateDatalist('details-car-model-options', carModels.map(model => model.modelName));
             } else {
                 console.error('Failed to fetch car models');
             }
@@ -259,18 +249,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function populateCarModelDropdowns(carModels) {
-        const carModelDropdowns = document.querySelectorAll('#car-model, #details-model, #filter-car-model');
-        carModelDropdowns.forEach(dropdown => {
-            dropdown.innerHTML = '<option value="">Wybierz model</option>';
-            carModels.forEach(carModel => {
-                const option = document.createElement('option');
-                option.value = carModel.modelName;
-                option.textContent = carModel.modelName;
-                dropdown.appendChild(option);
-            });
+    function populateDatalist(datalistId, options) {
+        const datalist = document.getElementById(datalistId);
+        datalist.innerHTML = '';
+        options.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option;
+            datalist.appendChild(optionElement);
         });
     }
+
+    function validateInput(inputId, datalistId) {
+        const input = document.getElementById(inputId);
+        const datalist = document.getElementById(datalistId);
+        const options = Array.from(datalist.options).map(option => option.value);
+
+        input.addEventListener('input', () => {
+            if (!options.includes(input.value)) {
+                input.setCustomValidity('Please select a valid option from the list.');
+            } else {
+                input.setCustomValidity('');
+            }
+        });
+    }
+    validateInput('filter-color', 'filter-color-options');
+    validateInput('filter-car-model', 'filter-car-model-options');
+    validateInput('car-color', 'add-car-color-options');
+    validateInput('car-model', 'add-car-model-options');
+    validateInput('details-color', 'details-car-color-options');
+    validateInput('details-model', 'details-car-model-options');
 
     fetchCarModels();
 
@@ -291,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('.car-list-container').style.display = 'none';
                 document.querySelector('.group-list-container').style.display = 'block';
             }
+            servicesDropdown.style.display = 'none';
         }
     });
 
@@ -319,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const cars = await response.json();
-                displayCars(cars);
+                displayCarsInGroup(cars, groupId);
                 document.querySelector('.car-list-container').style.display = 'block';
                 document.querySelector('.group-list-container').style.display = 'none';
             } else {
@@ -329,6 +337,64 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
             alert('An error occurred while fetching cars');
         }
+    }
+    function displayCarsInGroup(cars, groupId) {
+        carList.innerHTML = '';
+        cars.forEach(car => {
+            const row = document.createElement('tr');
+            row.dataset.carId = car.vehicleId;
+            row.innerHTML = `
+            <td><input type="checkbox" class="select-car-checkbox"></td>
+            <td>${car.carModel.modelName}</td>
+            <td>${car.registrationNumber}</td>
+            <td>${car.productionYear}</td>
+            <td>${car.status}</td>
+            <td>
+                <button class="details-btn" data-id="${car.vehicleId}">Details</button>
+                <button class="remove-from-group-btn" data-id="${car.vehicleId}" data-group-id="${groupId}">Usuń z grupy</button>
+            </td>
+        `;
+            carList.appendChild(row);
+
+            const detailsBtn = row.querySelector('.details-btn');
+            detailsBtn.addEventListener('click', () => {
+                openDetailsModal(car);
+            });
+
+            const removeFromGroupBtn = row.querySelector('.remove-from-group-btn');
+            removeFromGroupBtn.addEventListener('click', async () => {
+                if (!token) {
+                    alert('You must be logged in to remove a car from the group.');
+                    window.location.href = 'main.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/car-groups/${groupId}/cars/${car.vehicleId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.status === 401) {
+                        alert('Session expired or invalid token. Please log in again.');
+                        localStorage.removeItem('authToken');
+                        window.location.href = 'main.html';
+                        return;
+                    }
+
+                    if (response.ok) {
+                        row.remove();
+                    } else {
+                        alert('Failed to remove car from group.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the car from the group');
+                }
+            });
+        });
     }
 
     async function fetchCars(filters = {}) {
@@ -628,6 +694,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred while creating the group');
         }
     });
+
+
 
     addToGroupBtn.addEventListener('click', async () => {
         const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))

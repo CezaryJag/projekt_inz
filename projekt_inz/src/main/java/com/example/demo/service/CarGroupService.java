@@ -33,8 +33,13 @@ public class CarGroupService {
         return carGroupRepository.findById(groupId).orElseThrow(() -> new NoSuchElementException("CarGroup not found"));
     }
 
-    public void deleteCarGroup(Long groupId) {
-        carGroupRepository.deleteById(groupId);
+    public void removeCarFromGroup(Long groupId, Long carId) {
+        CarGroup carGroup = carGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+        carGroup.getCars().remove(car);
+        carGroupRepository.save(carGroup);
     }
 
     public CarGroup addCarsToGroup(Long groupId, Set<Long> carIds) {

@@ -45,9 +45,10 @@
                 </div>
                 <div class="filter-group">
                     <label for="filter-color">Kolor:</label>
-                    <select id="filter-color">
-                        <option value="">Wybierz kolor</option>
-                    </select>
+                    <input type="text" id="filter-color" list="filter-color-options" placeholder="Wpisz kolor">
+                    <datalist id="filter-color-options">
+                        <!-- Options will be populated dynamically -->
+                    </datalist>
                 </div>
                 <div class="filter-group">
                     <label for="filter-status">Status:</label>
@@ -75,9 +76,10 @@
                 </div>
                 <div class="filter-group">
                     <label for="filter-car-model">Model:</label>
-                    <select id="filter-car-model">
-                        <option value="">Wybierz model</option>
-                    </select>
+                    <input type="text" id="filter-car-model" list="filter-car-model-options" placeholder="Wpisz model">
+                    <datalist id="filter-car-model-options">
+                        <!-- Options will be populated dynamically -->
+                    </datalist>
                 </div>
                 <!--<button id="apply-filters-btn">Zapisz Filtry</button>-->
             </div>
@@ -140,15 +142,17 @@
             <span class="close-btn" id="close-add-car">&times;</span>
             <h2>Dodaj Auto</h2>
             <form id="add-car-form">
-                <select id="car-model" required>
-                    <option value="">Wybierz model</option>
-                </select>
+                <input type="text" id="car-model" list="add-car-model-options" placeholder="Wpisz model" required>
+                <datalist id="add-car-model-options">
+                    <!-- Options will be populated dynamically -->
+                </datalist>
                 <input type="number" id="car-year" placeholder="Rok" required>
                 <input type="text" id="car-registration" placeholder="Numer rejestracyjny" required>
                 <input type="number" id="car-milage" placeholder="Przebieg" required>
-                <select id="car-color" required>
-                    <option value="">Wybierz kolor</option>
-                </select>
+                <input type="text" id="car-color" list="add-car-color-options" placeholder="Wpisz kolor" required>
+                <datalist id="add-car-color-options">
+                    <!-- Options will be populated dynamically -->
+                </datalist>
                 <select id="car-gear-type" required>
                     <option value="">Wybierz typ skrzyni biegów</option>
                     <option value="manual">Manual</option>
@@ -179,15 +183,17 @@
             <h2>Szczegóły Auta</h2>
             <form id="details-form">
                 <input type="hidden" id="details-id">
-                <select id="details-model" required>
-                    <option value="">Wybierz model</option>
-                </select>
+                <input type="text" id="details-model" list="details-car-model-options" placeholder="Wpisz model" required>
+                <datalist id="details-car-model-options">
+                    <!-- Options will be populated dynamically -->
+                </datalist>
                 <input type="number" id="details-year" placeholder="Rok" required>
                 <input type="text" id="details-registration" placeholder="Numer rejestracyjny" required>
                 <input type="number" id="details-milage" placeholder="Przebieg" required>
-                <select id="details-color" required>
-                    <option value="">Wybierz kolor</option>
-                </select>
+                <input type="text" id="details-color" list="details-car-color-options" placeholder="Wpisz kolor" required>
+                <datalist id="details-car-color-options">
+                    <!-- Options will be populated dynamically -->
+                </datalist>
                 <select id="details-gear-type" required>
                     <option value="manual">Manual</option>
                     <option value="automat">Automat</option>

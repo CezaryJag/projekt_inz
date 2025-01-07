@@ -38,8 +38,11 @@ public class CarGroupController {
         return new ArrayList<>(carGroup.getCars());
     }
 
-    @DeleteMapping("/{groupId}")
-    public void deleteCarGroup(@PathVariable Long groupId) {
-        carGroupService.deleteCarGroup(groupId);
+    @DeleteMapping("/{groupId}/cars/{carId}")
+    public void removeCarFromGroup(@PathVariable Long groupId, @PathVariable Long carId) {
+        carGroupService.removeCarFromGroup(groupId, carId);
     }
+
+
+
 }

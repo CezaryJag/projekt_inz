@@ -84,6 +84,80 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function displayGroups(groups) {
+        const groupList = document.getElementById('group-list').querySelector('tbody');
+        groupList.innerHTML = '';
+        groups.forEach(group => {
+            const row = document.createElement('tr');
+            row.dataset.groupId = group.groupId;
+            row.innerHTML = `
+            <td>${group.groupName}</td>
+            <td>
+                <button class="manage-btn" data-id="${group.groupId}">Manage</button>
+                <button class="remove-group-btn" data-id="${group.groupId}">Usuń</button>
+            </td>
+        `;
+            groupList.appendChild(row);
+        });
+
+        // Attach event listeners after adding rows to the DOM
+        document.querySelectorAll('.manage-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const groupId = event.target.dataset.id;
+                fetchCarsByGroup(groupId);
+            });
+        });
+
+        document.querySelectorAll('.remove-group-btn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const groupId = event.target.dataset.id;
+                if (!token) {
+                    alert('You must be logged in to manage groups.');
+                    window.location.href = 'main.html';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/car-groups/${groupId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.status === 401) {
+                        alert('Session expired or invalid token. Please log in again.');
+                        localStorage.removeItem('authToken');
+                        window.location.href = 'main.html';
+                        return;
+                    }
+
+                    if (response.ok) {
+                        event.target.closest('tr').remove();
+                    } else {
+                        alert('Failed to remove group.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the group');
+                }
+            });
+        });
+    }
+
+    document.getElementById('group-search').addEventListener('input', () => {
+        const searchTerm = document.getElementById('group-search').value.toLowerCase();
+        const rows = document.querySelectorAll('#group-list tbody tr');
+        rows.forEach(row => {
+            const groupName = row.querySelector('td').textContent.toLowerCase();
+            if (groupName.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
     async function fetchColors() {
         try {
             const response = await fetch('/colors');
@@ -152,8 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const groupId = event.target.dataset.groupId;
             if (groupId === 'main') {
                 fetchCars();
-            } else {
-                fetchCarsByGroup(groupId);
+                document.querySelector('.car-list-container').style.display = 'block';
+                document.querySelector('.group-list-container').style.display = 'none';
+            } else if (event.target.id === 'groups-link') {
+                fetchGroups();
+                document.querySelector('.car-list-container').style.display = 'none';
+                document.querySelector('.group-list-container').style.display = 'block';
             }
         }
     });
@@ -184,6 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const cars = await response.json();
                 displayCars(cars);
+                document.querySelector('.car-list-container').style.display = 'block';
+                document.querySelector('.group-list-container').style.display = 'none';
             } else {
                 alert('Failed to fetch cars.');
             }
@@ -539,6 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const groups = await response.json();
                 populateGroupDropdown(groups);
+                displayGroups(groups);
             } else {
                 console.error('Failed to fetch groups');
             }
@@ -548,15 +629,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateGroupDropdown(groups) {
-        servicesDropdown.innerHTML = '<a href="#" data-group-id="main">Main</a>';
+        servicesDropdown.innerHTML = `
+        <a href="#" data-group-id="main">Main</a>
+        <a href="#" id="groups-link">Groups</a>
+    `;
         groupSelect.innerHTML = '<option value="">Wybierz grupę</option>';
         groups.forEach(group => {
-            const link = document.createElement('a');
-            link.href = '#';
-            link.dataset.groupId = group.groupId;
-            link.textContent = group.groupName;
-            servicesDropdown.appendChild(link);
-
             const option = document.createElement('option');
             option.value = group.groupId;
             option.textContent = group.groupName;

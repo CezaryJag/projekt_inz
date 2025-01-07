@@ -65,6 +65,52 @@
     display: flex; /* Use flex to ensure vertical stacking */
 }
 
+/* Styl dla tabeli grup */
+.group-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.group-table th, .group-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.group-table th {
+    background-color: #007bff;
+    color: white;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.group-table .manage-btn, .group-table .remove-group-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.group-table .remove-group-btn {
+    background-color: #dc3545;
+}
+
+.group-table .manage-btn:hover, .group-table .remove-group-btn:hover {
+    opacity: 0.8;
+}
+
+/* Styl dla pola wyszukiwania grup */
+#group-search {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 /* Styl dla tabeli samochodów */
 .car-table {
     width: 100%;

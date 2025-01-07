@@ -15,7 +15,8 @@
             <li class="dropdown">
                 <a href="#" class="dropbtn" id="services-btn">Services</a>
                 <div class="dropdown-content" id="services-dropdown" style="display: none;">
-                    <!-- Group options will be populated here by JavaScript -->
+                    <a href="#" data-group-id="main">Main</a>
+                    <a href="#" id="groups-link">Groups</a>
                 </div>
             </li>
         </ul>
@@ -106,6 +107,21 @@
                         <option value="">Wybierz grupę</option>
                     </select>
                 </div>
+            </div>
+            <div class="group-list-container" style="display: none;">
+                <h2>Lista Grup</h2>
+                <input type="text" id="group-search" placeholder="Szukaj grupy">
+                <table id="group-list" class="car-table">
+                    <thead>
+                    <tr>
+                        <th>Nazwa Grupy</th>
+                        <th>Akcje</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Wiersze grup będą dodawane dynamicznie -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>

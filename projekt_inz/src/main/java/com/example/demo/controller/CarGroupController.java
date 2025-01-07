@@ -31,10 +31,15 @@ public class CarGroupController {
     public CarGroup addCarsToGroup(@PathVariable Long groupId, @RequestBody Set<Long> carIds) {
         return carGroupService.addCarsToGroup(groupId, carIds);
     }
+
     @GetMapping("/{groupId}/cars")
     public List<Car> getCarsByGroupId(@PathVariable Long groupId) {
         CarGroup carGroup = carGroupService.getCarGroupById(groupId);
         return new ArrayList<>(carGroup.getCars());
     }
 
+    @DeleteMapping("/{groupId}")
+    public void deleteCarGroup(@PathVariable Long groupId) {
+        carGroupService.deleteCarGroup(groupId);
+    }
 }

@@ -43,6 +43,9 @@ public class CarGroupController {
         carGroupService.removeCarFromGroup(groupId, carId);
     }
 
-
+    @DeleteMapping("/{groupId}")
+    public void deleteCarGroup(@PathVariable Long groupId) {
+        carGroupService.deleteCarGroup(groupId);
+    }
 
 }

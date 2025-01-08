@@ -48,4 +48,7 @@ public class CarGroupService {
         carGroup.getCars().addAll(cars);
         return carGroupRepository.save(carGroup);
     }
+    public void deleteCarGroup(Long groupId) {
+        carGroupRepository.deleteById(groupId);
+    }
 }

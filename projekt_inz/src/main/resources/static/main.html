@@ -25,23 +25,39 @@
         <div class="hero-content">
             <div class="carousel-container">
                 <div class="carousel">
-                    <div class="carousel-slide">
-                        <img src="image1.jpg" alt="Slide 1">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="image2.jpg" alt="Slide 2">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="image3.jpg" alt="Slide 3">
+                    <div class="carousel__viewport">
+                        <div class="carousel__slide">
+                            <div class="carousel__snapper">
+                                <img src="image1.jpg" alt="Image 1">
+                            </div>
+                        </div>
+                        <div class="carousel__slide">
+                            <div class="carousel__snapper">
+                                <img src="image2.jpg" alt="Image 2">
+                            </div>
+                        </div>
+                        <div class="carousel__slide">
+                            <div class="carousel__snapper">
+                                <img src="image3.jpg" alt="Image 3">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <!--Miejsce na button -->
+                <!-- Nawigacja -->
+                <div class="carousel__navigation">
+                    <button class="carousel__prev">&#10094;</button>
+                    <button class="carousel__next">&#10095;</button>
+                </div>
             </div>
+
             <div class="section2">
-                <h3 class="section-title">"Easily manage your company's vehicle fleet"</h3>
-                <h3 class="section-title">"Create vehicle groups, add new cars, and manage them efficiently in one place. Everything for better organization and control."</h3>
+                <h3 class="section-title">Easily manage your company's vehicle fleet</h3>
+                <h3 class="section-subtitle">
+                    Create vehicle groups, add new cars, and manage them efficiently in one place. Everything for better organization and control.
+                </h3>
                 <button class="btn-primary">Open Fleet Panel</button>
             </div>
+
         </div>
 
     </section>
@@ -84,17 +100,48 @@
 
     <!-- Stopka -->
     <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2024 Twoja Firma. Wszystkie prawa zastrzeżone.</p>
-            <ul class="footer-links">
-                <li><a href="#privacy">Polityka prywatności</a></li>
-                <li><a href="#terms">Warunki użytkowania</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-            </ul>
+        <div class="footer-line"></div> <!-- Dodana linia -->
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Reach us</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +1012 3456 789</li>
+                    <li><i class="fas fa-envelope"></i> demo@gmail.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i>
+                        132 Dartmouth Street Boston, <br>
+                        Massachusetts 02156 United States
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Services</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Groups</a></li>
+                    <li><a href="#">Main</a></li>
+                    <li><a href="#">Forum</a></li>
+                </ul>
+            </div>
         </div>
     </footer>
+
 </main>
 <script src="main.js"></script>
 <script src="Script1.js"></script>
+<script src="carousel.js"></script>
 </body>
 </html>

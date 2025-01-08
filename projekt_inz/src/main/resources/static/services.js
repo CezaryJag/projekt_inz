@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const servicesDropdown = document.getElementById('services-dropdown');
     const token = localStorage.getItem('authToken');
     const groupSelect = document.getElementById('group-select');
+    const filterElements = document.querySelectorAll('.filter-group input, .filter-group select');
+    let currentGroupId = null;
 
     // Open modal
     addCarBtn.addEventListener('click', () => {
@@ -103,6 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.manage-btn').forEach(button => {
             button.addEventListener('click', (event) => {
                 const groupId = event.target.dataset.id;
+                currentGroupId = groupId;
+                console.log('Selected Group ID:', currentGroupId); // Debugging log
                 fetchCarsByGroup(groupId);
             });
         });
@@ -259,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function validateInput(inputId, datalistId) {
+  /*  function validateInput(inputId, datalistId) {
         const input = document.getElementById(inputId);
         const datalist = document.getElementById(datalistId);
         const options = Array.from(datalist.options).map(option => option.value);
@@ -271,13 +275,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.setCustomValidity('');
             }
         });
-    }
-    validateInput('filter-color', 'filter-color-options');
+    }*/
+    /*validateInput('filter-color', 'filter-color-options');
     validateInput('filter-car-model', 'filter-car-model-options');
     validateInput('car-color', 'add-car-color-options');
     validateInput('car-model', 'add-car-model-options');
     validateInput('details-color', 'details-car-color-options');
-    validateInput('details-model', 'details-car-model-options');
+    validateInput('details-model', 'details-car-model-options');*/
 
     fetchCarModels();
 
@@ -289,6 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
     servicesDropdown.addEventListener('click', (event) => {
         if (event.target.tagName === 'A') {
             const groupId = event.target.dataset.groupId;
+            currentGroupId = groupId === 'main' ? null : groupId;
+            console.log('Selected Group ID:', currentGroupId); // Debugging log
+            clearFilters();
             if (groupId === 'main') {
                 fetchCars();
                 document.querySelector('.car-list-container').style.display = 'block';
@@ -297,11 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchGroups();
                 document.querySelector('.car-list-container').style.display = 'none';
                 document.querySelector('.group-list-container').style.display = 'block';
+            } else {
+                fetchCarsByGroup(groupId);
             }
             servicesDropdown.style.display = 'none';
         }
     });
-
 
 
     async function fetchCarsByGroup(groupId) {
@@ -327,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const cars = await response.json();
-                displayCarsInGroup(cars, groupId);
+                displayCars(cars);
                 document.querySelector('.car-list-container').style.display = 'block';
                 document.querySelector('.group-list-container').style.display = 'none';
             } else {
@@ -338,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred while fetching cars');
         }
     }
+
     function displayCarsInGroup(cars, groupId) {
         carList.innerHTML = '';
         cars.forEach(car => {
@@ -397,15 +406,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function fetchCars(filters = {}) {
+    async function fetchCars(filters = {}, groupId = null) {
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
             return;
         }
         try {
-            const queryString = new URLSearchParams(filters).toString();
-            const response = await fetch(`/cars/filter?${queryString}`, {
+            let url = '/cars/filter';
+            if (groupId) {
+                url = `/car-groups/${groupId}/cars?${new URLSearchParams(filters).toString()}`;
+            } else {
+                const queryString = new URLSearchParams(filters).toString();
+                url += `?${queryString}`;
+            }
+            console.log('Fetching URL:', url); // Debugging log
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -429,6 +445,24 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
             alert('An error occurred while fetching cars');
         }
+    }
+    filterElements.forEach(element => {
+        element.addEventListener('input', () => {
+            const filters = getFilters();
+            console.log('Applying filters for Group ID:', currentGroupId); // Debugging log
+            fetchCars(filters, currentGroupId);
+        });
+    });
+    function clearFilters() {
+        filterElements.forEach(element => {
+            if (element.tagName === 'SELECT') {
+                element.selectedIndex = 0;
+            } else {
+                element.value = '';
+            }
+        });
+        console.log('Clearing filters for Group ID:', currentGroupId); // Debugging log
+        fetchCars({}, currentGroupId);
     }
 
     function displayCars(cars) {
@@ -603,13 +637,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    const filterElements = document.querySelectorAll('.filter-group');
-    filterElements.forEach(element => {
-        element.addEventListener('input', () => {
-            const filters = getFilters();
-            fetchCars(filters);
-        });
-    });
 
     function getFilters() {
         const filters = {};
@@ -777,4 +804,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchGroups();
     fetchCars();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const servicesBtn = document.getElementById('services-btn');
+        const dropdown = document.getElementById('services-dropdown');
+
+        // Pokaż/ukryj menu po kliknięciu
+        servicesBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Zapobiega domyślnej akcji linku
+            dropdown.classList.toggle('show'); // Przełącza widoczność menu
+        });
+
+        // Ukryj menu, gdy klikniemy poza nim
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && e.target !== servicesBtn) {
+                dropdown.classList.remove('show');
+            }
+        });
+    });
+    
 });

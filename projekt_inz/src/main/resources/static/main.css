@@ -9,15 +9,16 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    min-height: 100vh;
-    position: relative;
+    display: flex;
+    flex-direction: column; /* Ustawienie elastycznego układu w kolumnie */
+    min-height: 100vh; /* Strona zajmuje pełną wysokość okna */
 }
 
 /* Styl nawigacji */
 /* Ogólne ustawienia nawigacji */
 .navbar {
     background-color: #168fb2; /* Tło navbar */
-    padding: 20px;
+    padding: 20px 20px 20px 20px;
     position: fixed; /* Stała pozycja na górze strony */
     top: 0;
     left: 0;
@@ -30,16 +31,17 @@ body {
 .nav-links {
     list-style: none;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 40px; /* Odstęp między elementami */
     margin: 0;
 }
 
 /* Stylowanie dla każdego linku */
 .nav-links a, .dropbtn {
-    color: white;
+    color: black;
     text-decoration: none;
-    font-size: 18px;
+    font-size: 25px;
+    font-family: Inter;
     font-weight: 500;
     transition: color 0.3s ease;
 }
@@ -217,12 +219,15 @@ a:hover {
 .section2 {
     background: linear-gradient(135deg, #007bff, #00e6e6); /* Tło gradientowe */
     color: white;
-    padding: 30px 20px;
-    text-align: center; /* Wyśrodkowanie treści (przycisku) */
+    padding: 70px 20px; /* Większe odstępy wewnętrzne */
+    text-align: center; /* Wyśrodkowanie tekstu */
     border-radius: 8px;
-    margin: 10px;
+    width: 100%; /* Sekcja zajmuje całą szerokość */
+    box-sizing: border-box; /* Wlicza padding w szerokość */
+    margin: 0; /* Usuń marginesy */
 }
 
+/* Tytuły */
 .section-title {
     font-size: 20px;
     font-weight: bold;
@@ -230,32 +235,38 @@ a:hover {
     text-transform: uppercase;
 }
 
-.button-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Pełna wysokość ekranu */
+
+.section-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 50px; /* Większy odstęp od przycisku */
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .btn-primary {
-    color: #eaeaea;
-    font-size: 20px;
-    font-weight: 500;
-    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
-    background-color: transparent;
-    border: 2px solid #eaeaea;
-    padding: 12px 20px;
+    color: #ffffff; /* Widoczny tekst */
+    font-size: 18px; /* Rozmiar tekstu */
+    font-weight: 700; /* Pogrubienie tekstu */
+    font-family: 'Inter', sans-serif;
+    background-color: #007bff; /* Kolor przycisku */
+    border: 2px solid #ffffff; /* Obramowanie */
+    padding: 15px 20px; /* Większe odstępy wewnętrzne */
     border-radius: 10px;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    display: inline-block; /* Zapewnia, że element będzie traktowany jak przycisk */
+    transition: all 0.3s ease;
+    display: inline-block; /* Element w linii, by nie rozciągał się za szeroko */
     text-align: center;
-    width:auto;
+    width: auto; /* Przycisk dopasowuje się do treści */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
+/* Efekt hover na przycisku */
 .btn-primary:hover {
-    background-color: #eaeaea;
-    color: #168fb2;
+    background-color: #ffffff; /* Zmiana tła na hover */
+    color: #007bff; /* Kolor tekstu na hover */
+    border-color: #007bff; /* Zmiana koloru obramowania */
 }
 
 
@@ -268,80 +279,122 @@ a:hover {
     align-items: center;
 }
 
-/* Styl dla samej karuzeli */
 .carousel {
     display: flex;
-    animation: slide 12s infinite;
+    transition: transform 0.5s ease;
+    justify-content: center; /* Wyrównuje zdjęcia w poziomie */
+    align-items: center; /* Wyrównuje zdjęcia w pionie */
+    width: 100%;
 }
 
-/* Styl dla pojedynczego slajdu */
-.carousel-slide {
+.carousel__viewport {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.carousel__slide {
     min-width: 100%;
-    transition: transform 1s ease-in-out;
+    transition: transform 0.5s ease;
 }
 
-.carousel-slide img {
-    width: 100%; /* Możesz dostosować szerokość zdjęcia, np. "80%" */
-    height: 500px; /* Określa stałą wysokość dla zdjęcia */
-    object-fit: cover; /* Zapewnia, że zdjęcia będą odpowiednio przycięte, aby pasowały do kontenera */
+.carousel__snapper img {
+    width: 100%;
+    height: 500px;
+    display: block;
 }
 
-/* Animacja przesuwania slajdów */
-@keyframes slide {
-    0% {
-        transform: translateX(0);
-    }
+.carousel__navigation {
+    position: absolute;
+    top: 250px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 10px; /* Dodajemy odstęp od krawędzi */
+    z-index: 10; /* Zapewnia, że przyciski będą widoczne nad slajdami */
+}
 
-    33% {
-        transform: translateX(-100%);
-    }
+.carousel__prev, .carousel__next {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 30px;
+    border: none;
+    padding: 15px;
+    border-radius: 50%; /* Okrągły kształt */
+    cursor: pointer;
+    width: 50px; /* Określenie szerokości */
+    height: 50px; /* Określenie wysokości */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
 
-    66% {
-        transform: translateX(-200%);
-    }
 
-    100% {
-        transform: translateX(0);
-    }
+.carousel__prev:hover, .carousel__next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 /* Stopka */
 .footer {
-    background-color: #007bff; /* Kolor tła stopki */
-    color: white; /* Kolor tekstu */
-    padding: 20px 0; /* Wewnętrzne odstępy */
-    text-align: center; /* Wyśrodkowanie tekstu */
-    position: absolute;
-    bottom: 0;
-    width: 100%; /* Stopka zajmuje całą szerokość */
+    background-color: #007bff; /* Kolor tła */
+    color: black; /* Kolor tekstu */
+    padding: 40px 20px; /* Wewnętrzne odstępy */
+    margin-top: 40px; /* Większy odstęp od zawartości powyżej */
+    width: 100%;
 }
 
-.footer-content {
-    max-width: 1200px; /* Maksymalna szerokość kontenera */
-    margin: 0 auto; /* Wyśrodkowanie stopki na stronie */
-    padding: 0 20px; /* Odstępy wewnętrzne */
+.footer-line {
+    border-top: 2px solid black; /* Kreska na górze */
+    margin: 0 auto;
+    max-width: 1200px;
+    width: 90%; /* Szerokość linii */
+    margin-bottom: 20px; /* Odstęp między linią a treścią */
 }
 
-.footer p {
-    font-size: 14px; /* Rozmiar czcionki */
-    margin: 10px 0; /* Odstęp między akapitem a linkami */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto; /* Wyśrodkowanie stopki */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Cztery kolumny */
+    gap: 20px; /* Odstępy między kolumnami */
 }
 
-.footer-links {
-    list-style: none; /* Usunięcie punktów listy */
-    padding: 0; /* Usunięcie odstępów */
-    display: flex; /* Wyświetlanie linków w jednym wierszu */
-    justify-content: center; /* Wyśrodkowanie linków */
-    gap: 20px; /* Odstęp między linkami */
+.footer-column h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
 }
 
-.footer-links a {
-    color: white; /* Kolor tekstu linków */
-    text-decoration: none; /* Usunięcie podkreślenia */
-    font-size: 14px; /* Rozmiar czcionki */
-    transition: color 0.3s ease; /* Efekt przejścia na kolor */
+.footer-column ul {
+    list-style: none; /* Usuń wypunktowanie */
+    padding: 0;
 }
 
-.footer-links a:hover {
+.footer-column ul li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.footer-column ul li i {
+    margin-right: 10px; /* Odstęp między ikoną a tekstem */
+}
+
+.footer-column ul li a {
+    color: black;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-column ul li a:hover {
     color: #00e6e6; /* Kolor przy najechaniu */
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr; /* Jedna kolumna */
+    }
 }

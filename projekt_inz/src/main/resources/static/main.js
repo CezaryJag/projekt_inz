@@ -120,9 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const data = await response.json();
                 const token = data.token;
-
+                const name = data.user.name;
+                const surname = data.user.surname;
                 if (token) {
                     localStorage.setItem('authToken', token);
+                    //localStorage.setItem('name',name);
+                    localStorage.setItem('name',`${name} ${surname}`);
                     alert('Login successful');
                     loginModal.style.display = 'none';
                 }

@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(auth -> auth
                         //.requestMatchers("/services.html").authenticated()
-                        .requestMatchers("/cars").authenticated()
+                        .requestMatchers("/cars/**").authenticated()
+                        .requestMatchers("/car-groups/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService),

@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const cars = await response.json();
-                displayCars(cars);
+                displayCarsInGroup(cars, groupId);
                 document.querySelector('.car-list-container').style.display = 'block';
                 document.querySelector('.group-list-container').style.display = 'none';
             } else {

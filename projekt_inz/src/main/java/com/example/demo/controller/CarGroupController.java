@@ -5,6 +5,7 @@ import com.example.demo.entity.CarGroup;
 import com.example.demo.entity.GroupMember;
 import com.example.demo.service.CarGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,6 +27,12 @@ public class CarGroupController {
     @PostMapping
     public CarGroup createCarGroup(@RequestBody CarGroup carGroup) {
         return carGroupService.saveCarGroup(carGroup);
+    }
+
+    @GetMapping("/user-groups")
+    public ResponseEntity<List<CarGroup>> getUserGroups() {
+        List<CarGroup> userGroups = carGroupService.getCarGroupsForLoggedInUser();
+        return ResponseEntity.ok(userGroups);
     }
 
     @PostMapping("/{groupId}/cars")
@@ -56,7 +63,7 @@ public class CarGroupController {
 
     @PostMapping("/{groupId}/members")
     public GroupMember addUserToGroup(@PathVariable Long groupId, @RequestBody GroupMemberRequest request) {
-        return carGroupService.addUserToGroup(groupId, request.getEmail(), request.getRole());
+        return carGroupService.addUserToGroup(groupId, request.getUserId(), request.getRole());
     }
 
     @DeleteMapping("/{groupId}/members/{userId}")

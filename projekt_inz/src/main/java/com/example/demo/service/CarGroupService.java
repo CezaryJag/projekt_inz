@@ -37,6 +37,14 @@ public class CarGroupService {
         return carGroupRepository.findAll();
     }
 
+    public List<CarGroup> getCarGroupsForLoggedInUser() {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+        return groupMemberRepository.findByUser(user).stream()
+                .map(GroupMember::getCarGroup)
+                .collect(Collectors.toList());
+    }
+    
     public CarGroup saveCarGroup(CarGroup carGroup) {
         CarGroup savedGroup = carGroupRepository.save(carGroup);
 
@@ -84,9 +92,9 @@ public class CarGroupService {
         return groupMemberRepository.findByCarGroup_GroupId(groupId);
     }
 
-    public GroupMember addUserToGroup(Long groupId, String email, String role) {
+    public GroupMember addUserToGroup(Long groupId, Long userId, String role) {
         CarGroup carGroup = getCarGroupById(groupId);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
         GroupMember groupMember = new GroupMember();
         groupMember.setCarGroup(carGroup);
         groupMember.setUser(user);

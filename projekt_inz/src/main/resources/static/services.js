@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`/car-groups/${currentGroupId}/members`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ email, role })
                 });
@@ -184,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
 
     // Open modal
     addCarBtn.addEventListener('click', () => {

@@ -56,7 +56,7 @@ public class CarGroupController {
 
     @PostMapping("/{groupId}/members")
     public GroupMember addUserToGroup(@PathVariable Long groupId, @RequestBody GroupMemberRequest request) {
-        return carGroupService.addUserToGroup(groupId, request.getUserId(), request.getRole());
+        return carGroupService.addUserToGroup(groupId, request.getEmail(), request.getRole());
     }
 
     @DeleteMapping("/{groupId}/members/{userId}")

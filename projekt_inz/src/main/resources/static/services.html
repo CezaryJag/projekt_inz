@@ -25,14 +25,11 @@
     </nav>
 </header>
 
-
 <main class="content">
     <section id="general-section" class="tab-content">
         <div class="content-container">
             <div class="filter-container">
                 <div class="filter-group">
-                    <div class="filter-group">
-                    </div>
                     <label for="filter-year-from">Rok (od):</label>
                     <input type="number" id="filter-year-from" placeholder="Od">
                     <label for="filter-year-to">Rok (do):</label>
@@ -82,7 +79,6 @@
                         <!-- Options will be populated dynamically -->
                     </datalist>
                 </div>
-                <!--<button id="apply-filters-btn">Zapisz Filtry</button>-->
             </div>
             <div class="car-list-container">
                 <h2>Lista Samochodów</h2>
@@ -125,9 +121,34 @@
                     <!-- Wiersze grup będą dodawane dynamicznie -->
                     </tbody>
                 </table>
+
+            </div>
+            <div class="group-details-container">
+                <button id="view-members-btn" >Członkowie</button>
+                <!-- Inne szczegóły grupy -->
             </div>
         </div>
     </section>
+    <div class="modal" id="members-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-members">&times;</span>
+            <h2>Członkowie Grupy</h2>
+            <table id="members-list" class="car-table">
+                <thead>
+                <tr>
+                    <th>Imię</th>
+                    <th>Email</th>
+                    <th>Rola</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Wiersze członków będą dodawane dynamicznie -->
+                </tbody>
+            </table>
+            <button id="add-member-btn">Dodaj Członka</button>
+        </div>
+    </div>
     <div class="modal" id="create-group-modal">
         <div class="modal-content">
             <span class="close-btn" id="close-create-group">&times;</span>

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Car;
 import com.example.demo.entity.CarGroup;
+import com.example.demo.entity.GroupMember;
 import com.example.demo.service.CarGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,4 +49,23 @@ public class CarGroupController {
         carGroupService.deleteCarGroup(groupId);
     }
 
+    @GetMapping("/{groupId}/members")
+    public List<GroupMember> getGroupMembers(@PathVariable Long groupId) {
+        return carGroupService.getGroupMembers(groupId);
+    }
+
+    @PostMapping("/{groupId}/members")
+    public GroupMember addUserToGroup(@PathVariable Long groupId, @RequestBody GroupMemberRequest request) {
+        return carGroupService.addUserToGroup(groupId, request.getUserId(), request.getRole());
+    }
+
+    @DeleteMapping("/{groupId}/members/{userId}")
+    public void removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
+        carGroupService.removeUserFromGroup(groupId, userId);
+    }
+
+    @PutMapping("/{groupId}/members/{userId}")
+    public void updateUserRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestBody String newRole) {
+        carGroupService.updateUserRole(groupId, userId, newRole);
+    }
 }

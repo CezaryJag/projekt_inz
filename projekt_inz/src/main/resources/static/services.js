@@ -17,7 +17,174 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     const groupSelect = document.getElementById('group-select');
     const filterElements = document.querySelectorAll('.filter-group input, .filter-group select');
+    const viewMembersBtn = document.getElementById('view-members-btn');
+    const membersModal = document.getElementById('members-modal');
+    const closeMembers = document.getElementById('close-members');
+    const membersList = document.getElementById('members-list').querySelector('tbody');
+    const addMemberBtn = document.getElementById('add-member-btn');
+    const groupDetailsContainer = document.querySelector('.group-details-container');
     let currentGroupId = null;
+
+
+    viewMembersBtn.addEventListener('click', async () => {
+        if (!currentGroupId) {
+            alert('Proszę wybrać grupę.');
+            return;
+        }
+        try {
+            const response = await fetch(`/car-groups/${currentGroupId}/members`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const members = await response.json();
+                displayMembers(members);
+                membersModal.style.display = 'flex';
+            } else {
+                alert('Failed to fetch members.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while fetching members');
+        }
+    });
+
+
+
+    closeMembers.addEventListener('click', () => {
+        membersModal.style.display = 'none';
+    });
+
+    async function fetchGroupMembers(groupId) {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            alert('You must be logged in to access this data.');
+            window.location.href = 'main.html';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/car-groups/${groupId}/members`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401) {
+                alert('Session expired or invalid token. Please log in again.');
+                localStorage.removeItem('authToken');
+                window.location.href = 'main.html';
+                return;
+            }
+
+            if (response.ok) {
+                const members = await response.json();
+                displayMembers(members);
+            } else {
+                alert('Failed to fetch group members.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while fetching group members');
+        }
+    }
+
+    function displayMembers(members) {
+        membersList.innerHTML = '';
+        members.forEach(member => {
+            const row = document.createElement('tr');
+            row.dataset.memberId = member.id;
+            row.innerHTML = `
+            <td>${member.user.name}</td>
+            <td>${member.user.email}</td>
+            <td>${member.role}</td>
+            <td>
+                <button class="remove-member-btn" data-id="${member.id}">Usuń</button>
+                <button class="update-role-btn" data-id="${member.id}">Zmień Rolę</button>
+            </td>
+        `;
+            membersList.appendChild(row);
+
+            const removeMemberBtn = row.querySelector('.remove-member-btn');
+            removeMemberBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        row.remove();
+                    } else {
+                        alert('Failed to remove member.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the member');
+                }
+            });
+
+            const updateRoleBtn = row.querySelector('.update-role-btn');
+            updateRoleBtn.addEventListener('click', async () => {
+                const newRole = prompt('Enter new role:', member.role);
+                if (newRole) {
+                    try {
+                        const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}/role`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ role: newRole })
+                        });
+
+                        if (response.ok) {
+                            member.role = newRole;
+                            row.querySelector('td:nth-child(3)').textContent = newRole;
+                        } else {
+                            alert('Failed to update role.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating the role');
+                    }
+                }
+            });
+        });
+    }
+
+    addMemberBtn.addEventListener('click', async () => {
+        const email = prompt('Enter email of the user to add:');
+        const role = prompt('Enter role for the user:');
+        if (email && role) {
+            try {
+                const response = await fetch(`/car-groups/${currentGroupId}/members`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ email, role })
+                });
+
+                if (response.ok) {
+                    const newMember = await response.json();
+                    displayMembers([newMember]);
+                } else {
+                    alert('Failed to add member.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the member');
+            }
+        }
+    });
+
 
     // Open modal
     addCarBtn.addEventListener('click', () => {
@@ -108,6 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentGroupId = groupId;
                 console.log('Selected Group ID:', currentGroupId); // Debugging log
                 fetchCarsByGroup(groupId);
+                groupDetailsContainer.style.display = 'block'; // Ensure the container is displayed
+                viewMembersBtn.style.display = 'inline-block'; // Show the button
             });
         });
 
@@ -672,6 +841,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const groupName = document.getElementById('group-name').value;
         const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
             .map(checkbox => checkbox.closest('tr').dataset.carId);
+        const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
 
         try {
             const response = await fetch('/car-groups', {

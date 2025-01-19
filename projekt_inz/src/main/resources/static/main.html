@@ -71,11 +71,17 @@
                 <input type="email" id="login-email" placeholder="Email" required>
                 <input type="password" id="password" placeholder="Password" required>
                 <div class="form-actions">
-                    <label><input type="checkbox" id="remember-me"> Remember me</label>
-                    <a href="#" id="show_forgot">Forgot password?</a>
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        Remember me
+                    </label>
+                    <a href="#" id="show_forgot" class="forgot-password">Forgot password?</a>
                 </div>
                 <button type="submit">Login</button>
-                <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
+                <p class="register-section">
+                    Don't have an account?
+                    <a href="#" id="show-register" class="register-link">Register</a>
+                </p>
             </form>
             <form id="register-form" class="modal-form">
                 <h2>Rejestracja</h2>

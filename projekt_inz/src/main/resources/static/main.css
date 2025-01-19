@@ -8,7 +8,7 @@
 /* Ogólny styl strony */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #007bff;
     display: flex;
     flex-direction: column; /* Ustawienie elastycznego układu w kolumnie */
     min-height: 100vh; /* Strona zajmuje pełną wysokość okna */
@@ -17,7 +17,7 @@ body {
 /* Styl nawigacji */
 /* Ogólne ustawienia nawigacji */
 .navbar {
-    background-color: #168fb2; /* Tło navbar */
+    background-color: #007bff; /* Tło navbar */
     padding: 20px 20px 20px 20px;
     position: fixed; /* Stała pozycja na górze strony */
     top: 0;
@@ -112,6 +112,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    z-index: 100;
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
@@ -171,8 +172,60 @@ button:hover {
     transform: scale(1.05);
 }
 
+.form-actions {
+    display: flex; /* Układ w rzędzie */
+    justify-content: space-between; /* Checkbox po lewej, link po prawej */
+    align-items: center; /* Wyrównanie w pionie */
+    margin-top: 15px; /* Odstęp od reszty formularza */
+    font-size: 14px; /* Rozmiar tekstu */
+}
+
+/* Remember me styling */
+.remember-me {
+    display: flex; /* Układ checkbox + tekst w rzędzie */
+    align-items: center; /* Checkbox i tekst wyrównane w pionie */
+    gap: 5px; /* Odstęp między checkboxem a tekstem */
+    color: #555; /* Kolor tekstu */
+    white-space: nowrap;
+}
+
+/* Forgot password link styling */
+.forgot-password {
+    text-decoration: none; /* Usunięcie podkreślenia */
+    color: #007bff; /* Niebieski kolor */
+    font-weight: bold; /* Pogrubienie */
+}
+
+.forgot-password:hover {
+    text-decoration: underline; /* Podkreślenie po najechaniu */
+    color: #0056b3; /* Ciemniejszy kolor po najechaniu */
+}
+
+/* Register section styling */
+.register-section {
+    display: flex; /* Układ w rzędzie */
+    justify-content: center; /* Wyśrodkowanie w poziomie */
+    align-items: center; /* Wyrównanie w pionie */
+    font-size: 14px; /* Rozmiar tekstu */
+    margin-top: 20px; /* Odstęp od reszty formularza */
+    color: #555; /* Kolor tekstu */
+}
+
+/* Link styling for Register */
+.register-link {
+    text-decoration: none; /* Usunięcie podkreślenia */
+    color: #007bff; /* Kolor linku */
+    font-weight: bold; /* Pogrubienie */
+    margin-left: 5px; /* Odstęp między tekstem a linkiem */
+}
+
+.register-link:hover {
+    text-decoration: underline; /* Podkreślenie po najechaniu */
+    color: #0056b3; /* Ciemniejszy kolor po najechaniu */
+}
+
 a {
-    color: #00c3ff;
+    color: #11556f;
     text-decoration: none;
     font-size: 14px;
     transition: all 0.3s ease;
@@ -299,13 +352,15 @@ a:hover {
 
 .carousel__snapper img {
     width: 100%;
-    height: 500px;
-    display: block;
+    height: 450px;
+    display: flex;
+    object-fit: cover;
+
 }
 
 .carousel__navigation {
     position: absolute;
-    top: 250px;
+    top: 300px;
     left: 0;
     right: 0;
     display: flex;
@@ -340,8 +395,7 @@ a:hover {
 .footer {
     background-color: #007bff; /* Kolor tła */
     color: black; /* Kolor tekstu */
-    padding: 40px 20px; /* Wewnętrzne odstępy */
-    margin-top: 40px; /* Większy odstęp od zawartości powyżej */
+    padding: 60px 20px; /* Wewnętrzne odstępy */
     width: 100%;
 }
 

@@ -55,7 +55,6 @@ body {
 .group-details-container {
     display: none;
 }
-
 /* Style the "Członkowie" button */
 #view-members-btn {
     display: inline-block;
@@ -72,6 +71,7 @@ body {
 #view-members-btn:hover {
     background-color: #0056b3;
 }
+
 /* Dropdown menu */
 .dropdown-content {
     display: none;

@@ -11,4 +11,5 @@ import java.util.List;
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
     List<GroupMember> findByCarGroup_GroupId(Long groupId);
     List<GroupMember> findByUser_UserId(Long userId);
+    List<GroupMember> findByUser(User user);
 }

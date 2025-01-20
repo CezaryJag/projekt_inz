@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`/car-groups/${currentGroupId}/members`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ email, role })
                 });
@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
 
     // Open modal
     addCarBtn.addEventListener('click', () => {
@@ -939,7 +940,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchGroups() {
         try {
-            const response = await fetch('/car-groups', {
+            const response = await fetch('/car-groups/user-groups', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`

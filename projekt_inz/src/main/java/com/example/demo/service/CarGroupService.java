@@ -92,10 +92,9 @@ public class CarGroupService {
         return groupMemberRepository.findByCarGroup_GroupId(groupId);
     }
 
-    public GroupMember addUserToGroup(Long groupId, Long userId, String role) {
+    public GroupMember addUserToGroup(Long groupId, String email, String role) {
         CarGroup carGroup = getCarGroupById(groupId);
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
-        GroupMember groupMember = new GroupMember();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User not found"));        GroupMember groupMember = new GroupMember();
         groupMember.setCarGroup(carGroup);
         groupMember.setUser(user);
         groupMember.setRole(role);

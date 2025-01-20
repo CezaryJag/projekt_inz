@@ -149,6 +149,35 @@
             <button id="add-member-btn">Dodaj Członka</button>
         </div>
     </div>
+    <div class="modal" id="add-member-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-add-member">&times;</span>
+            <h2>Dodaj Członka</h2>
+            <form id="add-member-form">
+                <input type="email" id="member-email" placeholder="Email" required>
+                <select id="member-role" required>
+                    <option value="superadmin">Superadmin</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+                <button type="submit">Dodaj</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="update-role-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-update-role">&times;</span>
+            <h2>Zaktualizuj Rolę</h2>
+            <form id="update-role-form">
+                <select id="new-role" required>
+                    <option value="superadmin">Superadmin</option>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+                <button type="submit">Zaktualizuj</button>
+            </form>
+        </div>
+    </div>
     <div class="modal" id="create-group-modal">
         <div class="modal-content">
             <span class="close-btn" id="close-create-group">&times;</span>

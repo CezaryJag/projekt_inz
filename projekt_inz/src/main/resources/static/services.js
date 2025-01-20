@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const groupDetailsContainer = document.querySelector('.group-details-container');
     let currentGroupId = null;
 
+    const addMemberModal = document.getElementById('add-member-modal');
+    const closeAddMember = document.getElementById('close-add-member');
+    const addMemberForm = document.getElementById('add-member-form');
+    const updateRoleModal = document.getElementById('update-role-modal');
+    const closeUpdateRole = document.getElementById('close-update-role');
+    const updateRoleForm = document.getElementById('update-role-form');
+    let currentMemberId = null;
 
     viewMembersBtn.addEventListener('click', async () => {
         if (!currentGroupId) {
@@ -51,116 +58,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
+    addMemberBtn.addEventListener('click', () => {
+        addMemberModal.style.display = 'flex';
+    });
 
     closeMembers.addEventListener('click', () => {
         membersModal.style.display = 'none';
     });
 
-    async function fetchGroupMembers(groupId) {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-            alert('You must be logged in to access this data.');
-            window.location.href = 'main.html';
-            return;
-        }
+    closeAddMember.addEventListener('click', () => {
+        addMemberModal.style.display = 'none';
+    });
 
-        try {
-            const response = await fetch(`/car-groups/${groupId}/members`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+    closeUpdateRole.addEventListener('click', () => {
+        updateRoleModal.style.display = 'none';
+    });
 
-            if (response.status === 401) {
-                alert('Session expired or invalid token. Please log in again.');
-                localStorage.removeItem('authToken');
-                window.location.href = 'main.html';
-                return;
-            }
-
-            if (response.ok) {
-                const members = await response.json();
-                displayMembers(members);
-            } else {
-                alert('Failed to fetch group members.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while fetching group members');
-        }
-    }
-
-    function displayMembers(members) {
-        membersList.innerHTML = '';
-        members.forEach(member => {
-            const row = document.createElement('tr');
-            row.dataset.memberId = member.id;
-            row.innerHTML = `
-            <td>${member.user.name}</td>
-            <td>${member.user.email}</td>
-            <td>${member.role}</td>
-            <td>
-                <button class="remove-member-btn" data-id="${member.id}">Usuń</button>
-                <button class="update-role-btn" data-id="${member.id}">Zmień Rolę</button>
-            </td>
-        `;
-            membersList.appendChild(row);
-
-            const removeMemberBtn = row.querySelector('.remove-member-btn');
-            removeMemberBtn.addEventListener('click', async () => {
-                try {
-                    const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (response.ok) {
-                        row.remove();
-                    } else {
-                        alert('Failed to remove member.');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while removing the member');
-                }
-            });
-
-            const updateRoleBtn = row.querySelector('.update-role-btn');
-            updateRoleBtn.addEventListener('click', async () => {
-                const newRole = prompt('Enter new role:', member.role);
-                if (newRole) {
-                    try {
-                        const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}/role`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ role: newRole })
-                        });
-
-                        if (response.ok) {
-                            member.role = newRole;
-                            row.querySelector('td:nth-child(3)').textContent = newRole;
-                        } else {
-                            alert('Failed to update role.');
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('An error occurred while updating the role');
-                    }
-                }
-            });
-        });
-    }
-
-    addMemberBtn.addEventListener('click', async () => {
-        const email = prompt('Enter email of the user to add:');
-        const role = prompt('Enter role for the user:');
+    addMemberForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = document.getElementById('member-email').value;
+        const role = document.getElementById('member-role').value;
         if (email && role) {
             try {
                 const response = await fetch(`/car-groups/${currentGroupId}/members`, {
@@ -174,7 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     const newMember = await response.json();
-                    displayMembers([newMember]);
+                    appendMemberToTable(newMember);
+                    addMemberModal.style.display = 'none';
+                    addMemberForm.reset();
                 } else {
                     alert('Failed to add member.');
                 }
@@ -184,6 +103,90 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    updateRoleForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const newRole = document.getElementById('new-role').value;
+        if (newRole) {
+            try {
+                const response = await fetch(`/car-groups/${currentGroupId}/members/${currentMemberId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+
+                if (response.ok) {
+
+                    const row = membersList.querySelector(`tr[data-member-id="${currentMemberId}"]`);
+                    console.log('Current Member ID:', currentMemberId); // Debugging log
+                    console.log('Row found:', row); // Debugging log
+                    if (row) {
+                        row.querySelector('td:nth-child(3)').textContent = newRole;
+                    }
+                    updateRoleModal.style.display = 'none';
+                    updateRoleForm.reset();
+                } else {
+                    alert('Failed to update role.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while updating the role');
+            }
+        }
+    });
+
+    function displayMembers(members) {
+        membersList.innerHTML = '';
+        members.forEach(member => {
+            appendMemberToTable(member);
+        });
+    }
+
+    function appendMemberToTable(member) {
+        const row = document.createElement('tr');
+        row.setAttribute('data-member-id', member.user.userId);
+        row.innerHTML = `
+            <td>${member.user.name}</td>
+            <td>${member.user.email}</td>
+            <td>${member.role}</td>
+            <td>
+                <button class="remove-member-btn" data-id="${member.id}">Usuń</button>
+                <button class="update-role-btn" data-id="${member.id}">Zmień Rolę</button>
+            </td>
+        `;
+        membersList.appendChild(row);
+
+        const removeMemberBtn = row.querySelector('.remove-member-btn');
+        removeMemberBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    row.remove();
+                } else {
+                    alert('Failed to remove member.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while removing the member');
+            }
+        });
+
+        const updateRoleBtn = row.querySelector('.update-role-btn');
+        updateRoleBtn.addEventListener('click', () => {
+            currentMemberId = member.user.userId;
+            updateRoleModal.style.display = 'flex';
+        });
+    }
+
 
 
     // Open modal

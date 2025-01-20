@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/car-groups")
@@ -72,7 +73,11 @@ public class CarGroupController {
     }
 
     @PutMapping("/{groupId}/members/{userId}")
-    public void updateUserRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestBody String newRole) {
+    public ResponseEntity<Void> updateUserRole(@PathVariable Long groupId, @PathVariable Long userId, @RequestBody Map<String, String> requestBody) {
+        String newRole = requestBody.get("role");
+        System.out.println("groupId = " + groupId + ", userId = " + userId + ", newRole = " + newRole);
         carGroupService.updateUserRole(groupId, userId, newRole);
+        return ResponseEntity.ok().build();
     }
+
 }

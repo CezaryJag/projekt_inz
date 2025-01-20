@@ -115,16 +115,20 @@ public class CarGroupService {
     }
 
     public void updateUserRole(Long groupId, Long userId, String newRole) {
+        System.out.println("groupId = " + groupId + ", userId = " + userId + ", newRole = " + newRole);
         GroupMember groupMember = groupMemberRepository.findByCarGroup_GroupId(groupId).stream()
                 .filter(member -> member.getUser().getUserId().equals(userId))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("GroupMember not found"));
-
+                .orElseThrow(() -> {
+                    System.err.println("GroupMember not found for groupId = " + groupId + ", userId = " + userId);
+                    return new NoSuchElementException("GroupMember not found");
+                });
         if ("superadmin".equals(groupMember.getRole())) {
+            System.err.println("Cannot change role of superadmin for userId = " + userId);
             throw new IllegalArgumentException("Cannot change role of superadmin");
         }
-
         groupMember.setRole(newRole);
         groupMemberRepository.save(groupMember);
     }
+
 }

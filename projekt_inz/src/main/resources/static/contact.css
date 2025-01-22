@@ -1,0 +1,113 @@
+/* Import stylów wspólnych */
+@import url('main.css');
+
+/* Specyficzne style dla strony Contact */
+.hero-section {
+    background: url('image1.jpg') no-repeat center center/cover;
+    color: white;
+    text-align: center;
+    padding: 80px 20px;
+    border-radius: 8px;
+}
+
+.hero-section h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Informacje kontaktowe */
+.contact-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    background-color: #f8f9fa;
+    padding: 50px 20px;
+    border-radius: 8px;
+}
+
+.contact-info .contact-form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info .contact-form h3 {
+    font-size: 30px;
+    color: #333;
+    padding-bottom: 10px;
+}
+
+.contact-info .contact-form ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-info .contact-form ul li {
+    margin-bottom: 10px;
+    font-size: 22px;
+    color: #555;
+}
+
+.contact-info .contact-form ul li i {
+    color: #007bff;
+    margin-right: 8px;
+}
+
+/* Formularz kontaktowy */
+.contact-form {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea,
+.contact-form button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.contact-form button {
+    background: linear-gradient(135deg, #007bff, #00e6e6);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.contact-form button:hover {
+    background: linear-gradient(135deg, #00e6e6, #007bff);
+}
+
+.contact-form textarea {
+    resize: none; /* Wyłączenie zmiany rozmiaru */
+    height: 100px; /* Ustawienie stałej wysokości */
+    overflow-y: auto; /* Włączenie przewijania pionowego */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+}

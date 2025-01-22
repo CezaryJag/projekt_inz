@@ -16,7 +16,7 @@ body {
 /* Styl nawigacji */
 /* Ogólne ustawienia nawigacji */
 .navbar {
-    background-color: #168fb2; /* Tło navbar */
+    background-color: #007bff; /* Tło navbar */
     padding: 20px 20px 20px 20px;
     position: fixed; /* Stała pozycja na górze strony */
     top: 0;
@@ -76,17 +76,18 @@ body {
 .dropdown-content {
     display: none;
     position: absolute;
-    top: 100%;
-    left: 50%;
+    top: 130%;
+    left: 30%;
     transform: translateX(-20%);
-    background-color: #168fb2;
+    background-color: #007bff;
     border: 1px solid #e0e0e0;
-    min-width: 200px;
+    min-width: 150px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     border-radius: 8px;
     padding: 10px 0;
     overflow: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
 .dropdown-content.show {
@@ -101,18 +102,12 @@ body {
     font-size: 20px; /* Rozmiar czcionki */
     font-family: Inter, sans-serif;
     display: block; /* Każdy element w nowym wierszu */
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Efekt hover na linkach dropdown */
-.dropdown-content a:hover {
-    background-color: #168fb2; /* Jasny niebieski na hover */
-    color: #00e6e6; /* Biały tekst na hover */
-}
 
 /* Wyświetlanie menu po najechaniu */
 .dropdown:hover .dropdown-content {
-    display: block; /* Pokazuje menu */
+    display: none; /* Pokazuje menu */
 }
 
 /* Pozycjonowanie menu względem przycisku */
@@ -144,7 +139,7 @@ body {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -171,12 +166,13 @@ body {
     width: 80%;
     border-collapse: collapse;
     margin-top: 20px;
-    text-align: left;
+    /*text-align: left;*/
 }
 
 .car-table th, .car-table td {
     border: 1px solid #ccc;
     padding: 10px;
+    text-align: center;
 }
 
 .car-table th {
@@ -224,6 +220,22 @@ body {
     width: 400px;
     text-align: center;
     position: relative;
+    height: auto; /* Automatyczna wysokość */
+    max-height: 720px; /* Maksymalna wysokość, w której pojawi się przewijanie */
+    overflow-y: auto; /* Umożliwia przewijanie w pionie */
+    z-index: 100;
+}
+
+textarea {
+    width: 100%; /* Dopasowanie szerokości do kontenera */
+    height: 150px; /* Konkretna wysokość */
+    resize: none; /* Wyłączenie zmiany rozmiaru */
+    white-space: pre-wrap; /* Zawijanie tekstu */
+    overflow-wrap: break-word; /* Dodatkowe zawijanie dla długich słów */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 .close-btn {
@@ -240,7 +252,7 @@ input, button {
     width: auto; /* Automatyczna szerokość */
     padding: 10px 20px; /* Mniejsze odstępy */
     border-radius: 5px;
-    margin: 20px;
+    margin: 15px;
     border: 1px solid #007bff;
     font-size: 16px; /* Zmniejszenie rozmiaru czcionki */
     cursor: pointer;
@@ -279,34 +291,60 @@ button:hover {
     overflow-y: auto; /* Umożliwia przewijanie w pionie */
 }
 
+/* Styl dla kontenera filtrów */
+.filter-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Dynamiczne kolumny */
+    gap: 16px; /* Odstępy między elementami */
+    margin-bottom: 20px; /* Odstęp od innych sekcji */
+}
+
 /* Styl dla każdej grupy filtrów */
 .filter-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    margin: 0; /* Usunięcie marginesu */
+    padding: 0; /* Na wszelki wypadek */
 }
 
 /* Etykiety */
 .filter-group label {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 4px; /* Minimalny odstęp od pola */
 }
 
 /* Pola wyboru i inputy */
-.filter-group input, .filter-group select {
-    padding: 12px;
+.filter-group input,
+.filter-group select {
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    width: auto;
-    transition: border-color 0.3s ease;
+    border-radius: 8px; /* Zaokrąglenie */
+    font-size: 14px;
+    width: 100%; /* Szerokość w granicach kontenera */
+    max-width: 250px; /* Maksymalna szerokość dla większych ekranów */
+    box-shadow: none; /* Brak cienia */
+    margin: 0; /* Usunięcie marginesów */
+    background-color: #fff; /* Standardowe tło */
 }
 
-/* Efekt focus na inputach */
-.filter-group input:focus, .filter-group select:focus {
-    border-color: #007bff;
-    outline: none;
+/* Usunięcie efektów focus i hover */
+.filter-group input:focus,
+.filter-group select:focus,
+.filter-group input:hover,
+.filter-group select:hover {
+    border-color: #ccc; /* Kolor ramki bez zmian */
+    outline: none; /* Brak konturu */
+    box-shadow: none; /* Brak cienia */
+}
+
+/* Dostosowanie dla sekcji filtrów na mniejszych ekranach */
+@media (max-width: 768px) {
+    .filter-container {
+        grid-template-columns: 1fr; /* Jedna kolumna na małych ekranach */
+    }
 }
 
 /* Stylowanie przycisku */
@@ -370,18 +408,11 @@ datalist {
     background: linear-gradient(135deg, #ffffff, #e6f7ff);
 }
 
-/* Dodanie animacji do elementów (np. po najechaniu na filtr) */
-.filter-group input, .filter-group select {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.filter-group input:hover, .filter-group select:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
-}
 
 .car-list-container {
     flex-grow: 1;
+    margin-left: 18px;
+    margin-top: 10px;
 }
 
 /* Stopka */
@@ -455,8 +486,6 @@ datalist {
     padding: 20px;
     background-color: #f0f0f0;
     border-radius: 8px;
-    max-height: 720px;
-    overflow-y: auto;
     width: 100%;
 }
 

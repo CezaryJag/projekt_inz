@@ -163,11 +163,12 @@ body {
 
 /* Styl dla tabeli samochodów */
 .car-table {
-    width: 80%;
+    width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     /*text-align: left;*/
 }
+
 
 .car-table th, .car-table td {
     border: 1px solid #ccc;
@@ -225,7 +226,18 @@ body {
     overflow-y: auto; /* Umożliwia przewijanie w pionie */
     z-index: 100;
 }
-
+.modal-content-członkowie {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 800px;
+    text-align: center;
+    position: relative;
+    height: auto; /* Automatyczna wysokość */
+    max-height: 720px; /* Maksymalna wysokość, w której pojawi się przewijanie */
+    overflow-y: auto; /* Umożliwia przewijanie w pionie */
+    z-index: 100;
+}
 textarea {
     width: 100%; /* Dopasowanie szerokości do kontenera */
     height: 150px; /* Konkretna wysokość */

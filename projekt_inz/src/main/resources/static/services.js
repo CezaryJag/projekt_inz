@@ -32,6 +32,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeUpdateRole = document.getElementById('close-update-role');
     const updateRoleForm = document.getElementById('update-role-form');
     let currentMemberId = null;
+    const inputs = document.querySelectorAll('.input-container input');
+
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.nextElementSibling.classList.add('float');
+        });
+
+        input.addEventListener('blur', () => {
+            if (input.value === '') {
+                input.nextElementSibling.classList.remove('float');
+            }
+        });
+
+        if (input.value !== '') {
+            input.nextElementSibling.classList.add('float');
+        }
+    });
 
     viewMembersBtn.addEventListener('click', async () => {
         if (!currentGroupId) {
@@ -281,6 +298,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 groupDetailsContainer.style.display = 'block'; // Ensure the container is displayed
                 viewMembersBtn.style.display = 'inline-block'; // Show the button
             });
+        });
+
+        servicesDropdown.addEventListener('click', (event) => {
+            if (event.target.tagName === 'A') {
+                const groupId = event.target.dataset.groupId;
+                currentGroupId = groupId === 'main' ? null : groupId;
+                console.log('Selected Group ID:', currentGroupId); // Debugging log
+                clearFilters();
+                if (groupId === 'main') {
+                    fetchCars();
+                    document.querySelector('.car-list-container').style.display = 'block';
+                    document.querySelector('.group-list-container').style.display = 'none';
+                    viewMembersBtn.style.display = 'none'; // Hide the button
+                } else if (event.target.id === 'groups-link') {
+                    fetchGroups();
+                    document.querySelector('.car-list-container').style.display = 'none';
+                    document.querySelector('.group-list-container').style.display = 'block';
+                    viewMembersBtn.style.display = 'none'; // Hide the button
+                } else {
+                    fetchCarsByGroup(groupId);
+                    viewMembersBtn.style.display = 'inline-block'; // Show the button
+                }
+                servicesDropdown.style.display = 'none';
+            }
         });
 
         document.querySelectorAll('.remove-group-btn').forEach(button => {

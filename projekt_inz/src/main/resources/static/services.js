@@ -746,6 +746,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('details-color').value = car.color.colorName;
         document.getElementById('details-gear-type').value = car.gearType;
         document.getElementById('details-gear-count').value = car.gearCount;
+        document.getElementById('details-fuel-type').value = car.fuelType;
+        document.getElementById('details-body-type').value = car.bodyType;
+        document.getElementById('details-seat-count').value = car.seatCount;
         document.getElementById('details-status').value = car.status;
 
         if (car.maintenance) {
@@ -816,6 +819,9 @@ document.addEventListener('DOMContentLoaded', () => {
             color: { colorName: form.querySelector('#car-color, #details-color').value },
             gearType: form.querySelector('#car-gear-type, #details-gear-type').value,
             gearCount: parseInt(form.querySelector('#car-gear-count, #details-gear-count').value),
+            fuelType: form.querySelector('#car-fuel-type,#details-fuel-type').value,
+            bodyType: form.querySelector('#car-body-type,#details-body-type').value,
+            seatCount: parseInt(form.querySelector('#car-seat-count,#details-seat-count').value),
             status: form.querySelector('#car-status, #details-status').value,
             maintenance: {
                 maintenanceDate: form.querySelector('#maintenance-date, #details-maintenance-date').value,
@@ -862,6 +868,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const gearType = document.getElementById('filter-gearbox-type').value;
         const gearCount = document.getElementById('filter-gearbox-count').value;
         const carModel = document.getElementById('filter-car-model').value;
+        const fuelType = document.getElementById('filter-fuel-type').value;
+        const bodyType = document.getElementById('filter-body-type').value;
+        const seatCount = document.getElementById('filter-seat-count').value;
 
         if (yearFrom) filters.yearFrom = yearFrom;
         if (yearTo) filters.yearTo = yearTo;
@@ -872,6 +881,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gearType) filters.gearboxType = gearType;
         if (gearCount) filters.gearboxCount = gearCount;
         if (carModel) filters.carModel = carModel;
+        if (fuelType) filters.fuelType = fuelType;
+        if (bodyType) filters.bodyType = bodyType;
+        if (seatCount) filters.seatCount = seatCount;
 
         return filters;
     }

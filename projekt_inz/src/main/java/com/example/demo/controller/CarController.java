@@ -18,6 +18,8 @@ public class CarController {
 
     @GetMapping
     public List<Car> getAllCars() {
+        //List<Car> cars = carService.getAllCars();
+        //System.out.println("Returned cars: " + cars);
         return carService.getAllCars();
     }
 
@@ -57,13 +59,17 @@ public class CarController {
             @RequestParam(required = false) String gearboxType,
             @RequestParam(required = false) String gearboxCount,
             //@RequestBody(required = false) String fuelType,
-            @RequestParam(required = false) String carModel
+            @RequestParam(required = false) String carModel,
+            @RequestParam(required = false) String fuelType,
+            @RequestParam(required = false) String bodyType,
+            @RequestParam(required = false) String seatCount
     ) {
         // Obsługa null dla parametrów (ustawienie pustego stringa lub domyślnej wartości)
         List<Car> filteredCars = carService.getCarsByFilter(yearFrom,yearTo,milageFrom,milageTo,color,
-                status, gearboxType,gearboxCount,carModel);//fuelType,carModel);
+                status, gearboxType,gearboxCount,carModel, fuelType, bodyType, seatCount);//fuelType,carModel);
                 //yearFrom != null ? yearFrom : "",
                 //yearTo != null ? yearTo : "");
+        //System.out.println("Returned cars: " + filteredCars);
         return ResponseEntity.ok(filteredCars);
     }
 }

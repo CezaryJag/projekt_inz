@@ -30,7 +30,7 @@ public class User {
     @Column(name = "address", length = 100)
     private String address;
 
-    @Column(name = "phone_number", length = 15)
+    @Column(name = "phone_number", length = 9)
     private String phoneNumber;
 
     @Column(name = "account_creation_date")

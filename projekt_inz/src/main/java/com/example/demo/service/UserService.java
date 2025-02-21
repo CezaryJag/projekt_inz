@@ -27,6 +27,14 @@ public class UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+    public boolean emailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    public boolean phoneNumberExists(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber).isPresent();
+    }
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, VerificationTokenRepository tokenRepository, ResetTokenRepository resetTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -64,7 +72,7 @@ public class UserService {
         VerificationToken token = new VerificationToken();
         token.setUser(user);
         token.setToken(UUID.randomUUID().toString());
-        token.setExpiryDate(1); // Token ważny przez 24 godziny
+        token.setExpiryDate(15); // Token ważny przez 24 godziny
         tokenRepository.save(token);
 
         // Wysyłanie e-maila z linkiem weryfikacyjnym

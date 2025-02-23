@@ -131,4 +131,7 @@ public class CarGroupService {
         groupMemberRepository.save(groupMember);
     }
 
+    public boolean existsByGroupName(String groupName) {
+        return carGroupRepository.existsByGroupName(groupName);
+    }
 }

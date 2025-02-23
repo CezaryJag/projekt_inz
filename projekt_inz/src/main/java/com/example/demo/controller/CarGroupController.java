@@ -5,6 +5,7 @@ import com.example.demo.entity.CarGroup;
 import com.example.demo.entity.GroupMember;
 import com.example.demo.service.CarGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +27,13 @@ public class CarGroupController {
     }
 
     @PostMapping
-    public CarGroup createCarGroup(@RequestBody CarGroup carGroup) {
-        return carGroupService.saveCarGroup(carGroup);
+    public ResponseEntity<?> createCarGroup(@RequestBody CarGroup carGroup) {
+        if (carGroupService.existsByGroupName(carGroup.getGroupName())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Grupa o takiej nazwie już istnieje");
+        }
+        CarGroup createdGroup = carGroupService.saveCarGroup(carGroup);
+        return ResponseEntity.ok(createdGroup);
     }
-
     @GetMapping("/user-groups")
     public ResponseEntity<List<CarGroup>> getUserGroups() {
         List<CarGroup> userGroups = carGroupService.getCarGroupsForLoggedInUser();

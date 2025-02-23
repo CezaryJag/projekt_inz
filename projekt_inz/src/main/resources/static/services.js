@@ -736,26 +736,46 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
-    function openDetailsModal(car) {
-        document.getElementById('details-id').value = car.vehicleId;
-        document.getElementById('details-model').value = car.carModel.modelName;
-        document.getElementById('details-year').value = car.productionYear;
-        document.getElementById('details-registration').value = car.registrationNumber;
-        document.getElementById('details-milage').value = car.milage;
-        document.getElementById('details-color').value = car.color.colorName;
-        document.getElementById('details-gear-type').value = car.gearType;
-        document.getElementById('details-gear-count').value = car.gearCount;
-        document.getElementById('details-fuel-type').value = car.fuelType;
-        document.getElementById('details-body-type').value = car.bodyType;
-        document.getElementById('details-seat-count').value = car.seatCount;
-        document.getElementById('details-status').value = car.status;
+    //temptemptemp
+    async function openDetailsModal(car) {
+        if (!token) {
+            alert('You must be logged in to access this data.');
+            window.location.href = 'main.html';
+            return;
+        }
+        try {
+            const response = await fetch(`/cars/${car.vehicleId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+            if (response.ok) {
+                currcar = await response.json();
+            }
+        }catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating the car');
+        }
+        document.getElementById('details-id').value = currcar.vehicleId;
+        document.getElementById('details-model').value = currcar.carModel.modelName;
+        document.getElementById('details-year').value = currcar.productionYear;
+        document.getElementById('details-registration').value = currcar.registrationNumber;
+        document.getElementById('details-milage').value = currcar.milage;
+        document.getElementById('details-color').value = currcar.color.colorName;
+        document.getElementById('details-gear-type').value = currcar.gearType;
+        document.getElementById('details-gear-count').value = currcar.gearCount;
+        document.getElementById('details-fuel-type').value = currcar.fuelType;
+        document.getElementById('details-body-type').value = currcar.bodyType;
+        document.getElementById('details-seat-count').value = currcar.seatCount;
+        document.getElementById('details-status').value = currcar.status;
 
         if (car.maintenance) {
-            document.getElementById('details-maintenance-date').value = formatDate(car.maintenance.maintenanceDate);
-            document.getElementById('details-maintenance-end-date').value = formatDate(car.maintenance.maintenanceEndDate);
-            document.getElementById('details-maintenance-cost').value = car.maintenance.cost;
-            document.getElementById('details-maintenance-details').value = car.maintenance.details;
+            document.getElementById('details-maintenance-date').value = formatDate(currcar.maintenance.maintenanceDate);
+            document.getElementById('details-maintenance-end-date').value = formatDate(currcar.maintenance.maintenanceEndDate);
+            document.getElementById('details-maintenance-cost').value = currcar.maintenance.cost;
+            document.getElementById('details-maintenance-details').value = currcar.maintenance.details;
         } else {
             document.getElementById('details-maintenance-date').value = '';
             document.getElementById('details-maintenance-end-date').value = '';
@@ -775,7 +795,6 @@ document.addEventListener('DOMContentLoaded', () => {
     detailsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        // Validate form data
         if (!validateForm(detailsForm)) {
             return;
         }
@@ -792,7 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(carData)
             });
-
+            //temptemp
             if (response.ok) {
                 const updatedCar = await response.json();
                 const row = carList.querySelector(`tr[data-car-id="${updatedCar.vehicleId}"]`);
@@ -1048,5 +1067,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
+
 });

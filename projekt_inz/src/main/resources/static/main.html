@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strona z logowaniem i rejestracją</title>
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="floating_label.css">
 </head>
 <body>
 <header class="navbar">
@@ -68,8 +69,14 @@
             <span class="close-btn" id="close-login">&times;</span>
             <form id="login-form" class="modal-form active">
                 <h2>Login</h2>
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
+                <div class="input-container">
+                    <input type="email" id="login-email" placeholder="" required>
+                    <label for="login-email">Email</label>
+                </div>
+                <div class="input-container">
+                    <input type="password" id="password" placeholder="" required>
+                    <label for="password">Password</label>
+                </div>
                 <div class="form-actions">
                     <label class="remember-me">
                         <input type="checkbox" id="remember-me">
@@ -85,24 +92,44 @@
             </form>
             <form id="register-form" class="modal-form">
                 <h2>Rejestracja</h2>
-                <input type="text" id="firstname" placeholder="Imię" required>
-                <input type="text" id="lastname" placeholder="Nazwisko" required>
-                <input type="email" id="register-email" placeholder="Email" required>
-                <input type="password" id="register-password" placeholder="Hasło" required>
-                <input type="password" id="register-password-confirm" placeholder="Powtórz hasło" required>
-                <input type="text" id="phone" placeholder="Numer telefonu" required>
+                <div class="input-container">
+                    <input type="text" id="firstname" placeholder="" required>
+                    <label for="firstname">Imię</label>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="lastname" placeholder="" required>
+                    <label for="lastname">Nazwisko</label>
+                </div>
+                <div class="input-container">
+                    <input type="email" id="register-email" placeholder="" required>
+                    <label for="register-email">Email</label>
+                </div>
+                <div class="input-container">
+                    <input type="password" id="register-password" placeholder="" required>
+                    <label for="register-password">Hasło</label>
+                </div>
+                <div class="input-container">
+                    <input type="password" id="register-password-confirm" placeholder="" required>
+                    <label for="register-password-confirm">Powtórz hasło</label>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="phone" placeholder="" required>
+                    <label for="phone">Numer telefonu</label>
+                </div>
                 <button type="submit">Zarejestruj się</button>
                 <p><a href="#" id="show-login">Masz już konto? Zaloguj się</a></p>
             </form>
             <form id="reset-password-form" class="modal-form">
                 <h2>Reset Password</h2>
-                <input type="email" id="reset-email" placeholder="Enter your email" required>
+                <div class="input-container">
+                    <input type="email" id="reset-email" placeholder="Enter your email" required>
+                    <label for="reset-email">Enter your email</label>
+                </div>
                 <button type="submit" id="sendResetLink">Send Reset Link</button>
                 <p><a href="#" id="back-to-login">Back to Login</a></p>
             </form>
         </div>
     </div>
-
 
     <!-- Stopka -->
     <footer class="footer">

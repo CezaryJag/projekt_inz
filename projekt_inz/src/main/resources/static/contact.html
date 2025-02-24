@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact</title>
   <link rel="stylesheet" href="contact.css">
+  <link rel="stylesheet" href="floating_label.css">
 </head>
 <body>
 <header class="navbar">
@@ -36,16 +37,34 @@
         </div>
         <div class="contact-form">
           <form>
-            <input type="text" placeholder="First Name" required>
-            <input type="text" placeholder="Last Name" required>
-            <input type="email" placeholder="Email" required>
-            <input type="tel" placeholder="Phone Number" required>
-            <select name="subject">
-              <option value="general">General Inquiry</option>
-              <option value="services">Services</option>
-              <option value="support">Support</option>
-            </select>
-            <textarea placeholder="Your Message" required></textarea>
+            <div class="input-container">
+              <input type="text" id="first-name" placeholder="" required>
+              <label for="first-name">First Name</label>
+            </div>
+            <div class="input-container">
+              <input type="text" id="last-name" placeholder="" required>
+              <label for="last-name">Last Name</label>
+            </div>
+            <div class="input-container">
+              <input type="email" id="email" placeholder="" required>
+              <label for="email">Email</label>
+            </div>
+            <div class="input-container">
+              <input type="tel" id="phone-number" placeholder="" required>
+              <label for="phone-number">Phone Number</label>
+            </div>
+            <div class="input-container">
+              <select id="subject" name="subject" required>
+                <option value="" disabled selected>Select Subject</option>
+                <option value="general">General Inquiry</option>
+                <option value="services">Services</option>
+                <option value="support">Support</option>
+              </select>
+
+            </div>
+            <div class="input-container">
+              <textarea id="message" placeholder="Your Message" required></textarea>
+            </div>
             <button type="submit">Send Message</button>
           </form>
         </div>

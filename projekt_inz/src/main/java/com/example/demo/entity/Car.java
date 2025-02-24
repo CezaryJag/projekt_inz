@@ -53,18 +53,32 @@ public class Car {
     @JoinColumn(name = "color_id", referencedColumnName = "color_id", insertable = false, updatable = false)
     private Color color;
 
+    @Column(name = "fuel_type", nullable = false)
+    private String fuelType;
+
+    @Column(name = "body_type", nullable = false)
+    private String bodyType;
+
+    @Column(name = "seat_count", nullable = false)
+    private Integer seatCount;
+
+    public Integer getSeatCount() {return seatCount;}
+    public void setSeatCount(Integer seatCount) {this.seatCount = seatCount;}
+
+    public String getBodyType() {return bodyType;}
+    public void setBodyType(String bodyType) {this.bodyType = bodyType;}
+
+    public String getFuelType() {return fuelType;}
+    public void setFuelType(String fuelType) {this.fuelType = fuelType;}
+
     public Long getVehicleId() {
         return vehicleId;
     }
-
     public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
+    public Long getUserId() {return userId;}
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -72,7 +86,6 @@ public class Car {
     public String getRegistrationNumber() {
         return registrationNumber;
     }
-
     public void setRegistrationNumber(String registrationNumber) {
         this.registrationNumber = registrationNumber;
     }
@@ -80,7 +93,6 @@ public class Car {
     public Integer getProductionYear() {
         return productionYear;
     }
-
     public void setProductionYear(Integer productionYear) {
         this.productionYear = productionYear;
     }
@@ -88,7 +100,6 @@ public class Car {
     public Integer getModelId() {
         return modelId;
     }
-
     public void setModelId(Integer modelId) {
         this.modelId = modelId;
     }
@@ -96,7 +107,6 @@ public class Car {
     public CarModel getCarModel() {
         return carModel;
     }
-
     public void setCarModel(CarModel carModel) {
         this.carModel = carModel;
     }
@@ -104,7 +114,6 @@ public class Car {
     public Integer getGearCount() {
         return gearCount;
     }
-
     public void setGearCount(Integer gearCount) {
         this.gearCount = gearCount;
     }
@@ -112,7 +121,6 @@ public class Car {
     public String getGearType() {
         return gearType;
     }
-
     public void setGearType(String gearType) {
         this.gearType = gearType;
     }
@@ -120,7 +128,6 @@ public class Car {
     public Integer getMilage() {
         return milage;
     }
-
     public void setMilage(Integer milage) {
         this.milage = milage;
     }
@@ -128,7 +135,6 @@ public class Car {
     public String getStatus() {
         return status;
     }
-
     public void setStatus(String status) {
         this.status = status;
     }
@@ -136,7 +142,6 @@ public class Car {
     public Integer getMaintenanceId() {
         return maintenanceId;
     }
-
     public void setMaintenanceId(Integer maintenanceId) {
         this.maintenanceId = maintenanceId;
     }
@@ -144,7 +149,6 @@ public class Car {
     public Maintenance getMaintenance() {
         return maintenance;
     }
-
     public void setMaintenance(Maintenance maintenance) {
         this.maintenance = maintenance;
     }
@@ -152,7 +156,6 @@ public class Car {
     public Integer getColorId() {
         return colorId;
     }
-
     public void setColorId(Integer colorId) {
         this.colorId = colorId;
     }
@@ -160,7 +163,6 @@ public class Car {
     public Color getColor() {
         return color;
     }
-
     public void setColor(Color color) {
         this.color = color;
     }

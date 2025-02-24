@@ -9,6 +9,7 @@ import com.example.demo.repository.CarRepository;
 import com.example.demo.repository.ColorRepository;
 import com.example.demo.repository.MaintenanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,7 +43,10 @@ public class CarService {
             String status,
             String gearType,
             String gearCount,
-            String carModel) {
+            String carModel,
+            String fuelType,
+            String bodyType,
+            String seatCount) {
         if (yearFrom == null || yearFrom.isEmpty()) {
             yearFrom = "0";
         }
@@ -70,17 +74,37 @@ public class CarService {
         if (carModel == null || carModel.isEmpty()) {
             carModel = null;
         }
+        if (fuelType == null || fuelType.isEmpty()) {
+            fuelType = null;
+        }
+        if (bodyType == null || bodyType.isEmpty()) {
+            bodyType = null;
+        }
+        /*if (seatCount == null || seatCount.isEmpty()) {
+            seatCount = "0";
+        }*/
         return carRepository.findByFilters(
-                yearFrom,
-                yearTo,
-                milageFrom,
-                milageTo,
+                parseInteger(yearFrom),
+                parseInteger(yearTo),
+                parseInteger(milageFrom),
+                parseInteger(milageTo),
                 color,
                 status,
                 gearType,
-                gearCount,
-                carModel);
+                parseInteger(gearCount),
+                carModel,
+                fuelType,
+                bodyType,
+                parseInteger(seatCount)
+        );
 
+    }
+    private Integer parseInteger(String value) {
+        try {
+            return (value != null && !value.isEmpty()) ? Integer.parseInt(value) : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public Car saveCar(Car car) {

@@ -32,6 +32,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeUpdateRole = document.getElementById('close-update-role');
     const updateRoleForm = document.getElementById('update-role-form');
     let currentMemberId = null;
+    const inputs = document.querySelectorAll('.input-container input');
+
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.nextElementSibling.classList.add('float');
+        });
+
+        input.addEventListener('blur', () => {
+            if (input.value === '') {
+                input.nextElementSibling.classList.remove('float');
+            }
+        });
+
+        if (input.value !== '') {
+            input.nextElementSibling.classList.add('float');
+        }
+    });
 
     viewMembersBtn.addEventListener('click', async () => {
         if (!currentGroupId) {
@@ -281,6 +298,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 groupDetailsContainer.style.display = 'block'; // Ensure the container is displayed
                 viewMembersBtn.style.display = 'inline-block'; // Show the button
             });
+        });
+
+        servicesDropdown.addEventListener('click', (event) => {
+            if (event.target.tagName === 'A') {
+                const groupId = event.target.dataset.groupId;
+                currentGroupId = groupId === 'main' ? null : groupId;
+                console.log('Selected Group ID:', currentGroupId); // Debugging log
+                clearFilters();
+                if (groupId === 'main') {
+                    fetchCars();
+                    document.querySelector('.car-list-container').style.display = 'block';
+                    document.querySelector('.group-list-container').style.display = 'none';
+                    viewMembersBtn.style.display = 'none'; // Hide the button
+                } else if (event.target.id === 'groups-link') {
+                    fetchGroups();
+                    document.querySelector('.car-list-container').style.display = 'none';
+                    document.querySelector('.group-list-container').style.display = 'block';
+                    viewMembersBtn.style.display = 'none'; // Hide the button
+                } else {
+                    fetchCarsByGroup(groupId);
+                    viewMembersBtn.style.display = 'inline-block'; // Show the button
+                }
+                servicesDropdown.style.display = 'none';
+            }
         });
 
         document.querySelectorAll('.remove-group-btn').forEach(button => {
@@ -695,23 +736,46 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
-    function openDetailsModal(car) {
-        document.getElementById('details-id').value = car.vehicleId;
-        document.getElementById('details-model').value = car.carModel.modelName;
-        document.getElementById('details-year').value = car.productionYear;
-        document.getElementById('details-registration').value = car.registrationNumber;
-        document.getElementById('details-milage').value = car.milage;
-        document.getElementById('details-color').value = car.color.colorName;
-        document.getElementById('details-gear-type').value = car.gearType;
-        document.getElementById('details-gear-count').value = car.gearCount;
-        document.getElementById('details-status').value = car.status;
+    //temptemptemp
+    async function openDetailsModal(car) {
+        if (!token) {
+            alert('You must be logged in to access this data.');
+            window.location.href = 'main.html';
+            return;
+        }
+        try {
+            const response = await fetch(`/cars/${car.vehicleId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+            if (response.ok) {
+                currcar = await response.json();
+            }
+        }catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating the car');
+        }
+        document.getElementById('details-id').value = currcar.vehicleId;
+        document.getElementById('details-model').value = currcar.carModel.modelName;
+        document.getElementById('details-year').value = currcar.productionYear;
+        document.getElementById('details-registration').value = currcar.registrationNumber;
+        document.getElementById('details-milage').value = currcar.milage;
+        document.getElementById('details-color').value = currcar.color.colorName;
+        document.getElementById('details-gear-type').value = currcar.gearType;
+        document.getElementById('details-gear-count').value = currcar.gearCount;
+        document.getElementById('details-fuel-type').value = currcar.fuelType;
+        document.getElementById('details-body-type').value = currcar.bodyType;
+        document.getElementById('details-seat-count').value = currcar.seatCount;
+        document.getElementById('details-status').value = currcar.status;
 
         if (car.maintenance) {
-            document.getElementById('details-maintenance-date').value = formatDate(car.maintenance.maintenanceDate);
-            document.getElementById('details-maintenance-end-date').value = formatDate(car.maintenance.maintenanceEndDate);
-            document.getElementById('details-maintenance-cost').value = car.maintenance.cost;
-            document.getElementById('details-maintenance-details').value = car.maintenance.details;
+            document.getElementById('details-maintenance-date').value = formatDate(currcar.maintenance.maintenanceDate);
+            document.getElementById('details-maintenance-end-date').value = formatDate(currcar.maintenance.maintenanceEndDate);
+            document.getElementById('details-maintenance-cost').value = currcar.maintenance.cost;
+            document.getElementById('details-maintenance-details').value = currcar.maintenance.details;
         } else {
             document.getElementById('details-maintenance-date').value = '';
             document.getElementById('details-maintenance-end-date').value = '';
@@ -731,7 +795,6 @@ document.addEventListener('DOMContentLoaded', () => {
     detailsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        // Validate form data
         if (!validateForm(detailsForm)) {
             return;
         }
@@ -748,7 +811,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(carData)
             });
-
+            //temptemp
             if (response.ok) {
                 const updatedCar = await response.json();
                 const row = carList.querySelector(`tr[data-car-id="${updatedCar.vehicleId}"]`);
@@ -775,6 +838,9 @@ document.addEventListener('DOMContentLoaded', () => {
             color: { colorName: form.querySelector('#car-color, #details-color').value },
             gearType: form.querySelector('#car-gear-type, #details-gear-type').value,
             gearCount: parseInt(form.querySelector('#car-gear-count, #details-gear-count').value),
+            fuelType: form.querySelector('#car-fuel-type,#details-fuel-type').value,
+            bodyType: form.querySelector('#car-body-type,#details-body-type').value,
+            seatCount: parseInt(form.querySelector('#car-seat-count,#details-seat-count').value),
             status: form.querySelector('#car-status, #details-status').value,
             maintenance: {
                 maintenanceDate: form.querySelector('#maintenance-date, #details-maintenance-date').value,
@@ -821,6 +887,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const gearType = document.getElementById('filter-gearbox-type').value;
         const gearCount = document.getElementById('filter-gearbox-count').value;
         const carModel = document.getElementById('filter-car-model').value;
+        const fuelType = document.getElementById('filter-fuel-type').value;
+        const bodyType = document.getElementById('filter-body-type').value;
+        const seatCount = document.getElementById('filter-seat-count').value;
 
         if (yearFrom) filters.yearFrom = yearFrom;
         if (yearTo) filters.yearTo = yearTo;
@@ -831,6 +900,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gearType) filters.gearboxType = gearType;
         if (gearCount) filters.gearboxCount = gearCount;
         if (carModel) filters.carModel = carModel;
+        if (fuelType) filters.fuelType = fuelType;
+        if (bodyType) filters.bodyType = bodyType;
+        if (seatCount) filters.seatCount = seatCount;
 
         return filters;
     }
@@ -995,5 +1067,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
+
 });

@@ -52,6 +52,44 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.classList.add('active');
     });
 
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('password').value;
+        const loginError = document.getElementById('login-error');
+
+        loginError.style.display = 'none'; // Ukryj poprzedni błąd
+
+        try {
+            const response = await fetch(`/api/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const token = data.token;
+                const name = data.name;
+                const surname = data.surname;
+                const id = data.id;
+
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                    localStorage.setItem('name', `${name} ${surname}`);
+                    localStorage.setItem('id', `${id}`);
+                    loginModal.style.display = 'none';
+                }
+            } else {
+                const error = await response.json();
+                loginError.textContent = error.message;
+                loginError.style.display = 'block';
+            }
+        } catch (error) {
+            loginError.textContent = 'Wystąpił błąd podczas logowania';
+            loginError.style.display = 'block';
+        }
+    });
+
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -61,10 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstname = document.getElementById('firstname').value;
         const lastname = document.getElementById('lastname').value;
         const phone = document.getElementById('phone').value;
+        const registerError = document.getElementById('register-error');
+        const notification = document.createElement('div');
 
-        // Check if passwords match
+        registerError.style.display = 'none';
+
         if (password !== passwordConfirm) {
-            alert('Passwords do not match');
+            registerError.textContent = 'Passwords do not match';
+            registerError.style.display = 'block';
             return;
         }
 
@@ -73,8 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
             password,
             name: firstname,
             surname: lastname,
-            phone
+            phoneNumber: phone
         };
+
+        loginModal.style.display = 'none';
+        notification.textContent = 'Registration completed, please confirm your email';
+        notification.style.position = 'fixed';
+        notification.style.top = '0';
+        notification.style.left = '50%';
+        notification.style.transform = 'translateX(-50%)';
+        notification.style.backgroundColor = 'green';
+        notification.style.color = 'white';
+        notification.style.padding = '10px';
+        notification.style.zIndex = '1000';
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 5000);
 
         try {
             const response = await fetch('/api/auth/register', {
@@ -85,67 +143,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(userData)
             });
 
-            if (response.ok) {
-                alert('Registration successful');
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-            } else {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const error = await response.json();
-                    alert(error.message || 'An error occurred during registration');
-                } else {
-                    const error = await response.text();
-                    alert(error || 'An error occurred during registration');
-                }
+            if (!response.ok) {
+                const error = await response.json();
+                registerError.textContent = error.message;
+                registerError.style.display = 'block';
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred during registration');
+            registerError.textContent = 'An error occurred during registration';
+            registerError.style.display = 'block';
         }
     });
 
-    // Handle login
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('password').value;
-
-        try {
-            const response = await fetch(`/api/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
-                method: 'POST',
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const token = data.token;
-                const name = data.user.name;
-                const surname = data.user.surname;
-                const id = data.user.id;
-                if (token) {
-                    localStorage.setItem('authToken', token);
-                    //localStorage.setItem('name',name);
-                    localStorage.setItem('name',`${name} ${surname}`);
-                    localStorage.setItem('id',`${id}`);
-                    alert('Login successful');
-                    loginModal.style.display = 'none';
-                }
-            } else {
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    const error = await response.json();
-                    alert(error.message || 'Invalid email or password');
-                } else {
-                    const error = await response.text();
-                    alert(error || 'Invalid email or password');
-                }
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred during login');
-        }
-    });
 
     servicesBtn.addEventListener('click', async (e) => {
         e.preventDefault();

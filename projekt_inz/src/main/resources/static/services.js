@@ -858,17 +858,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const maintenanceEndDate = form.querySelector('#maintenance-end-date, #details-maintenance-end-date').value;
 
         if (registrationNumber.length < 5 || registrationNumber.length > 7) {
-            alert('Numer rejestracyjny musi mieć od 5 do 7 znaków.');
+            showNotification('Numer rejestracyjny musi mieć od 5 do 7 znaków.', false);
             return false;
         }
 
         if (!/^\d{4}$/.test(productionYear)) {
-            alert('Rok produkcji musi być 4-cyfrowy.');
+            showNotification('Rok produkcji musi być 4-cyfrowy.', false);
             return false;
         }
 
         if (maintenanceDate && maintenanceEndDate && new Date(maintenanceDate) > new Date(maintenanceEndDate)) {
-            alert('Data rozpoczęcia konserwacji nie może być późniejsza niż data zakończenia.');
+            showNotification('Data rozpoczęcia konserwacji nie może być późniejsza niż data zakończenia.', false);
             return false;
         }
 
@@ -916,7 +916,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const groupName = document.getElementById('group-name').value;
         const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
             .map(checkbox => checkbox.closest('tr').dataset.carId);
-        const userId = localStorage.getItem('userId'); // Retrieve user ID from localStorage
 
         try {
             const response = await fetch('/car-groups', {
@@ -928,7 +927,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ groupName })
             });
 
-            if (response.ok) {
+            if (response.status === 409) {
+                showNotification('Grupa o takiej nazwie już istnieje', false);
+            } else if (response.ok) {
                 const newGroup = await response.json();
                 const groupSelect = document.getElementById('group-select');
                 const option = document.createElement('option');
@@ -948,22 +949,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     if (response.ok) {
-                        alert('Cars added to group successfully.');
+                        showNotification('Pomyślnie utworzono grupe', true);
+                        createGroupModal.style.display = 'none';
+                        createGroupForm.reset();
                     } else {
-                        alert('Failed to add cars to group.');
+                        showNotification('Failed to add cars to group.', false);
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('An error occurred while adding cars to the group');
+                    showNotification('An error occurred while adding cars to the group', false);
                 }
-                createGroupModal.style.display = 'none';
-                createGroupForm.reset();
             } else {
-                alert('Failed to create group.');
+                showNotification('Failed to create group.', false);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while creating the group');
+            showNotification('An error occurred while creating the group', false);
         }
     });
 
@@ -975,12 +976,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const groupId = document.getElementById('group-select').value;
         if (!groupId) {
-            alert('Proszę wybrać grupę.');
+            showNotification('Proszę wybrać grupę.', false);
             return;
         }
 
         if (!token) {
-            alert('You must be logged in to add cars to a group.');
+            showNotification('You must be logged in to add cars to a group.', false);
             window.location.href = 'main.html';
             return;
         }
@@ -996,20 +997,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.status === 401) {
-                alert('Session expired or invalid token. Please log in again.');
+                showNotification('Session expired or invalid token. Please log in again.', false);
                 localStorage.removeItem('authToken');
                 window.location.href = 'main.html';
                 return;
             }
 
             if (response.ok) {
-                alert('Cars added to group successfully.');
+                showNotification('Pomyślnie dodano wybrane auta do grupy.', true);
             } else {
-                alert('Failed to add cars to group.');
+                showNotification('Failed to add cars to group.', false);
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('An error occurred while adding cars to the group');
+            showNotification('An error occurred while adding cars to the group', false);
         }
     });
 
@@ -1049,6 +1050,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     fetchGroups();
     fetchCars();
+
+    function showNotification(message, isSuccess) {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '0';
+        notification.style.left = '50%';
+        notification.style.transform = 'translateX(-50%)';
+        notification.style.backgroundColor = isSuccess ? 'green' : 'red';
+        notification.style.color = 'white';
+        notification.style.padding = '10px';
+        notification.style.zIndex = '1000';
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 5000);
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         const servicesBtn = document.getElementById('services-btn');

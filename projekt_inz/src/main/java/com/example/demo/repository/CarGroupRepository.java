@@ -4,4 +4,5 @@ import com.example.demo.entity.CarGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CarGroupRepository extends JpaRepository<CarGroup, Long> {
+    boolean existsByGroupName(String groupName);
 }

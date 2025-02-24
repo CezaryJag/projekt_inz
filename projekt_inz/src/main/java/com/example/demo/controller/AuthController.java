@@ -28,21 +28,31 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
+        Map<String, String> response = new HashMap<>();
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().body("Email is required");
+            response.put("message", "Email is required");
+            return ResponseEntity.badRequest().body(response);
         }
-        if (user.getName() == null || user.getName().isEmpty()) {
-            return ResponseEntity.badRequest().body("Name is required");
+        if (userService.emailExists(user.getEmail())) {
+            response.put("message", "Email already exists");
+            return ResponseEntity.badRequest().body(response);
         }
-        if (user.getSurname() == null || user.getSurname().isEmpty()) {
-            return ResponseEntity.badRequest().body("Surname is required");
+        if (user.getPassword() == null || user.getPassword().isEmpty() || !isValidPassword(user.getPassword())) {
+            response.put("message", "Password must be at least 6 characters long and contain at least one uppercase letter");
+            return ResponseEntity.badRequest().body(response);
         }
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            return ResponseEntity.badRequest().body("Password is required");
+        if (user.getPhoneNumber() == null || user.getPhoneNumber().length() != 9) {
+            response.put("message", "Phone number must be 9 digits long");
+            return ResponseEntity.badRequest().body(response);
         }
-        if (!isValidPassword(user.getPassword())) {
-            return ResponseEntity.badRequest().body("Password must be at least 6 characters long and contain at least one uppercase letter");
+        if (!user.getPhoneNumber().matches("\\d{9}")) {
+            response.put("message", "Phone number must contain only digits");
+            return ResponseEntity.badRequest().body(response);
+        }
+        if (userService.phoneNumberExists(user.getPhoneNumber())) {
+            response.put("message", "Phone number already exists");
+            return ResponseEntity.badRequest().body(response);
         }
 
         userService.registerUser(
@@ -54,7 +64,8 @@ public class AuthController {
                 user.getAddress(),
                 user.getPhoneNumber()
         );
-        return ResponseEntity.ok("User registered successfully, check your email");
+        response.put("message", "User registered successfully, check your email");
+        return ResponseEntity.ok(response);
     }
 
     private boolean isValidPassword(String password) {
@@ -65,29 +76,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestParam String email, @RequestParam String password) {
+        Map<String, String> response = new HashMap<>();
         if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body("Email is required");
+            response.put("message", "Email is required");
+            return ResponseEntity.badRequest().body(response);
         }
         if (password == null || password.isEmpty()) {
-            return ResponseEntity.badRequest().body("Password is required");
+            response.put("message", "Password is required");
+            return ResponseEntity.badRequest().body(response);
         }
 
         boolean authenticated = userService.authenticate(email, password);
         if (!authenticated) {
-            return ResponseEntity.status(401).body("Invalid email or password");
+            response.put("message", "Invalid email or password");
+            return ResponseEntity.status(401).body(response);
         }
 
         User loggedInUser = userService.findByEmail(email);
         String token = jwtService.generateToken(loggedInUser.getEmail());
-        Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        //response.put("user", loggedInUser);
-        response.put("user", Map.of(
-                "name", loggedInUser.getName(),
-                "surname", loggedInUser.getSurname(),
-                "id",loggedInUser.getUserId()
-        ));
+        response.put("name", loggedInUser.getName());
+        response.put("surname", loggedInUser.getSurname());
+        response.put("id", String.valueOf(loggedInUser.getUserId()));
         return ResponseEntity.ok(response);
     }
 

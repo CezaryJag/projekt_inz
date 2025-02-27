@@ -446,6 +446,38 @@ a:hover {
     color: #00e6e6; /* Kolor przy najechaniu */
 }
 
+/* Ensure the user options are hidden by default */
+#user-options {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    right: 20px;
+}
+
+/* Style the user options list items */
+#user-options li {
+    padding: 8px 16px;
+}
+
+/* Style the user options links */
+#user-options li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+#user-icon {
+    margin-left: 20px; /* Adjust the margin as needed */
+}
+/* Change background color on hover */
+#user-options li a:hover {
+    background-color: #ddd;
+}
+
 /* Responsywność */
 @media (max-width: 768px) {
     .footer-container {

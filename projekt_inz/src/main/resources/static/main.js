@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const forgotPasswordLink = document.getElementById('show_forgot');
     const backToLoginLink = document.getElementById('back-to-login');
     const servicesDropdown = document.getElementById('services-dropdown');
+    const userMenu = document.getElementById('user-menu');
+    const userIcon = document.getElementById('user-icon');
+    const userOptions = document.getElementById('user-options');
+    const logoutBtn = document.getElementById('logout-btn');
 
     // Open login modal
     loginBtn.addEventListener('click', () => {
@@ -59,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('password').value;
         const loginError = document.getElementById('login-error');
 
-        loginError.style.display = 'none'; // Ukryj poprzedni błąd
+        loginError.style.display = 'none'; // Hide previous error
 
         try {
             const response = await fetch(`/api/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
@@ -78,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('name', `${name} ${surname}`);
                     localStorage.setItem('id', `${id}`);
                     loginModal.style.display = 'none';
+                    loginBtn.style.display = 'none';
+                    userMenu.style.display = 'block';
                 }
             } else {
                 const error = await response.json();
@@ -85,10 +91,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginError.style.display = 'block';
             }
         } catch (error) {
-            loginError.textContent = 'Wystąpił błąd podczas logowania';
+            loginError.textContent = 'An error occurred during login';
             loginError.style.display = 'block';
         }
     });
+
+    // Handle logout
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('name');
+        localStorage.removeItem('id');
+        loginBtn.style.display = 'block';
+        userMenu.style.display = 'none';
+    });
+
+    // Toggle user options
+    userIcon.addEventListener('click', (e) => {
+        e.preventDefault();
+        userOptions.style.display = userOptions.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Check if user is already logged in
+    if (localStorage.getItem('authToken')) {
+        loginBtn.style.display = 'none';
+        userMenu.style.display = 'block';
+    }
+
 
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();

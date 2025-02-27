@@ -33,6 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateRoleForm = document.getElementById('update-role-form');
     let currentMemberId = null;
     const inputs = document.querySelectorAll('.input-container input');
+    const userMenu = document.getElementById('user-menu');
+    const userIcon = document.getElementById('user-icon');
+    const userOptions = document.getElementById('user-options');
+    const logoutBtn = document.getElementById('logout-btn');
 
     inputs.forEach(input => {
         input.addEventListener('focus', () => {
@@ -48,6 +52,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (input.value !== '') {
             input.nextElementSibling.classList.add('float');
         }
+    });
+
+    // Toggle user options
+    userIcon.addEventListener('click', (e) => {
+        e.preventDefault();
+        userOptions.style.display = userOptions.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Close user options when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!userMenu.contains(e.target) && userOptions.style.display === 'block') {
+            userOptions.style.display = 'none';
+        }
+    });
+
+    // Handle logout
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('name');
+        localStorage.removeItem('id');
+        window.location.href = 'main.html'; // Redirect to main.html after logout
     });
 
     viewMembersBtn.addEventListener('click', async () => {

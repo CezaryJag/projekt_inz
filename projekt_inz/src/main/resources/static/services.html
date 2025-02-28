@@ -27,7 +27,7 @@
                 <ul id="user-options" style="display: none;">
                     <li><a href="#">Ustawienia</a></li>
                     <li><a href="#">Powiadomienia</a></li>
-                    <li><a href="#">Twoje auta</a></li>
+                    <li><a href="rented_cars.html">Twoje auta</a></li>
                     <li><a href="#" id="logout-btn">Wyloguj</a></li>
                 </ul>
             </li>
@@ -164,6 +164,17 @@
             </div>
         </div>
     </section>
+    <div class="modal" id="rental-end-date-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-rental-end-date">&times;</span>
+            <h2>Select Rental End Date</h2>
+            <form id="rental-end-date-form">
+                <label for="rental-end-date">Rental End Date:</label>
+                <input type="date" id="rental-end-date" required>
+                <button type="submit">Confirm</button>
+            </form>
+        </div>
+    </div>
     <div class="modal" id="members-modal">
         <div class="modal-content-członkowie">
             <span class="close-btn" id="close-members">&times;</span>

@@ -75,6 +75,39 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'main.html'; // Redirect to main.html after logout
     });
 
+    async function rentCar(vehicleId) {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to rent a car.', false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/rented-cars/${vehicleId}/rent`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const message = await response.text();
+            if (response.ok) {
+                showNotification(message, true);
+                // Update the car status in the UI
+                const carRow = document.querySelector(`tr[data-car-id="${vehicleId}"]`);
+                carRow.querySelector('td:nth-child(5)').textContent = 'niedostępny';
+            } else {
+                showNotification(message, false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An error occurred while renting the car', false);
+        }
+    }
+
+
+
     viewMembersBtn.addEventListener('click', async () => {
         if (!currentGroupId) {
             alert('Proszę wybrać grupę.');
@@ -397,7 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${car.productionYear}</td>
         <td>${car.status}</td>
         <td>
-            <button class="details-btn" data-id="${car.vehicleId}">Details</button>
+            <button class="details-btn" data-id="${car.vehicleId}">Detale</button>
+            <button class="rent-btn" data-id="${car.vehicleId}">Wypożycz</button>
             <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
         </td>
     `;
@@ -406,6 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const detailsBtn = row.querySelector('.details-btn');
         detailsBtn.addEventListener('click', () => {
             openDetailsModal(car);
+        });
+
+        const rentBtn = row.querySelector('.rent-btn');
+        rentBtn.addEventListener('click', () => {
+            rentCar(car.vehicleId);
         });
 
         const removeBtn = row.querySelector('.remove-btn');
@@ -597,7 +636,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${car.productionYear}</td>
             <td>${car.status}</td>
             <td>
-                <button class="details-btn" data-id="${car.vehicleId}">Details</button>
+                <button class="details-btn" data-id="${car.vehicleId}">Detale</button>
+                <button class="rent-btn" data-id="${car.vehicleId}">Wypożycz</button>
                 <button class="remove-from-group-btn" data-id="${car.vehicleId}" data-group-id="${groupId}">Usuń z grupy</button>
             </td>
         `;
@@ -606,6 +646,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailsBtn = row.querySelector('.details-btn');
             detailsBtn.addEventListener('click', () => {
                 openDetailsModal(car);
+            });
+
+            const rentBtn = row.querySelector('.rent-btn');
+            rentBtn.addEventListener('click', () => {
+                rentCar(car.vehicleId);
             });
 
             const removeFromGroupBtn = row.querySelector('.remove-from-group-btn');
@@ -715,7 +760,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${car.productionYear}</td>
                 <td>${car.status}</td>
                 <td>
-                    <button class="details-btn" data-id="${car.vehicleId}">Details</button>
+                    <button class="details-btn" data-id="${car.vehicleId}">Detale</button>
+                    <button class="rent-btn" data-id="${car.vehicleId}">Wypożycz</button>
                     <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
                 </td>
             `;
@@ -724,6 +770,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailsBtn = row.querySelector('.details-btn');
             detailsBtn.addEventListener('click', () => {
                 openDetailsModal(car);
+            });
+
+            const rentBtn = row.querySelector('.rent-btn');
+            rentBtn.addEventListener('click', () => {
+                rentCar(car.vehicleId);
             });
 
             const removeBtn = row.querySelector('.remove-btn');

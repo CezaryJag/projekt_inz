@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twoje Auta</title>
+    <link rel="stylesheet" href="services.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="rented_cars.css">
+</head>
+<body>
+<header class="navbar">
+    <nav>
+        <ul class="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="about.html">About</a></li>
+            <li id="user-menu" style="display: block;">
+                <a href="#" id="user-icon">
+                    <img src="user.png" alt="User Icon" style="width: 24px; height: 24px;">
+                </a>
+                <ul id="user-options" style="display: none;">
+                    <li><a href="#">Ustawienia</a></li>
+                    <li><a href="#">Powiadomienia</a></li>
+                    <li><a href="rented_cars.html">Twoje auta</a></li>
+                    <li><a href="#" id="logout-btn">Wyloguj</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main class="content">
+    <section id="rented-cars-section" class="tab-content">
+        <div class="content-container">
+            <h2>Twoje Wypożyczone Auta</h2>
+            <table id="rented-car-list" class="car-table">
+                <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Numer Rejestracyjny</th>
+                    <th>Data Wypożyczenia</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Wiersze wypożyczonych samochodów będą dodawane dynamicznie -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-line"></div>
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>Reach us</h3>
+            <ul>
+                <li><i class="fas fa-phone"></i> +1012 3456 789</li>
+                <li><i class="fas fa-envelope"></i> demo@gmail.com</li>
+                <li><i class="fas fa-map-marker-alt"></i>
+                    132 Dartmouth Street Boston, <br>
+                    Massachusetts 02156 United States
+                </li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Company</h3>
+            <ul>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Legal</h3>
+            <ul>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms & Services</a></li>
+                <li><a href="#">Refund Policy</a></li>
+            </ul>
+        </div>
+        <div class="footer-column">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#">Groups</a></li>
+                <li><a href="#">Main</a></li>
+                <li><a href="#">Forum</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+<script src="rented_cars.js"></script>
+</body>
+</html>

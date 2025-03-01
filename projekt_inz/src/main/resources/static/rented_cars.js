@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     const rentedCarList = document.getElementById('rented-car-list').querySelector('tbody');
+    const rentModal = document.getElementById('rent-modal');
+    const closeRentModal = document.getElementById('close-rent-modal');
+    const rentStartInput = document.getElementById('rent-start');
+    const rentEndInput = document.getElementById('rent-end');
+    const confirmRentBtn = document.getElementById('confirm-rent');
 
     if (!token) {
         alert('You must be logged in to access this data.');
@@ -38,8 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${car.car ? car.car.carModel.modelName : 'Unknown Model'}</td>
             <td>${car.car ? car.car.registrationNumber : 'Unknown Registration'}</td>
             <td>${new Date(car.rentDate).toLocaleDateString()}</td>
+            <td>${new Date(car.rentEndDate).toLocaleDateString()}</td>
             <td>
-                <button class="extend-rent-btn" data-id="${car.vehicleId}">Przedłuż Wypożyczenie</button>
+                <button class="extend-rent-btn" data-id="${car.vehicleId}">Przedłuż</button>
                 <button class="cancel-rent-btn" data-id="${car.vehicleId}">Zrezygnuj</button>
             </td>
         `;

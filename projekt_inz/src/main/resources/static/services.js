@@ -37,6 +37,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const userIcon = document.getElementById('user-icon');
     const userOptions = document.getElementById('user-options');
     const logoutBtn = document.getElementById('logout-btn');
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmBtn = document.getElementById('confirm-delete');
+    const confirmCancelBtn = document.getElementById('confirm-cancel');
+    const closeConfirmBtn = document.getElementById('close-confirm');
+    const confirmTitle = confirmModal.querySelector('h1');
+    const confirmMessage = confirmModal.querySelector('p');
+
+    const rentModal = document.getElementById('rent-modal');
+    const closeRentModal = document.getElementById('close-rent-modal');
+    const rentStartInput = document.getElementById('rent-start');
+    const rentEndInput = document.getElementById('rent-end');
+    const confirmRentBtn = document.getElementById('confirm-rent');
+    let selectedCarId = null;
+
+    //rent
+    function openRentModal(carId) {
+        selectedCarId = carId;
+        rentModal.style.display = 'flex';
+
+        const today = new Date().toISOString().split('T')[0];
+        rentStartInput.min = today;
+        rentEndInput.min = today;
+        rentStartInput.value = today;
+        rentEndInput.value = today;
+    }
+
+    function closeRentModalHandler() {
+        rentModal.style.display = 'none';
+        selectedCarId = null;
+    }
+    function handleRentClick(event) {
+        const carId = event.target.dataset.id;
+        if (carId) {
+            openRentModal(carId);
+        }
+    }
+
+    closeRentModal.addEventListener('click', () => {
+        rentModal.style.display = 'none';
+    });
+
+    //confirm
+    confirmCancelBtn.addEventListener('click', () => {
+        confirmModal.style.display = 'none';
+    });
+
+    closeConfirmBtn.addEventListener('click', () => {
+        confirmModal.style.display = 'none';
+    });
 
     inputs.forEach(input => {
         input.addEventListener('focus', () => {
@@ -75,26 +124,34 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'main.html'; // Redirect to main.html after logout
     });
 
-    async function rentCar(vehicleId) {
+    async function rentCar(vehicleId, rentStart, rentEnd) {
         const token = localStorage.getItem('authToken');
         if (!token) {
             showNotification('You must be logged in to rent a car.', false);
             return;
         }
-
+        /*const rentData = {
+            rentDate: rentStart,
+            rentalEndDate: rentEnd
+        };
+        console.log("Wysyłane dane do API:", JSON.stringify(rentData));*/
         try {
             const response = await fetch(`/api/rented-cars/${vehicleId}/rent`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                    rentDate: rentStart,
+                    rentalEndDate: rentEnd
+                    //rentData
+                })
             });
 
             const message = await response.text();
             if (response.ok) {
                 showNotification(message, true);
-                // Update the car status in the UI
                 const carRow = document.querySelector(`tr[data-car-id="${vehicleId}"]`);
                 carRow.querySelector('td:nth-child(5)').textContent = 'niedostępny';
             } else {
@@ -111,6 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
     viewMembersBtn.addEventListener('click', async () => {
         if (!currentGroupId) {
             alert('Proszę wybrać grupę.');
+            return;
+        }
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to see group members.', false);
             return;
         }
         try {
@@ -153,6 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const email = document.getElementById('member-email').value;
         const role = document.getElementById('member-role').value;
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to add a new member to the group.', false);
+            return;
+        }
         if (email && role) {
             try {
                 const response = await fetch(`/car-groups/${currentGroupId}/members`, {
@@ -182,6 +249,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updateRoleForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const newRole = document.getElementById('new-role').value;
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to update users role.', false);
+            return;
+        }
         if (newRole) {
             try {
                 const response = await fetch(`/car-groups/${currentGroupId}/members/${currentMemberId}`, {
@@ -221,6 +293,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function appendMemberToTable(member) {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to see group members.', false);
+            return;
+        }
         const row = document.createElement('tr');
         row.setAttribute('data-member-id', member.user.userId);
         row.innerHTML = `
@@ -236,23 +313,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const removeMemberBtn = row.querySelector('.remove-member-btn');
         removeMemberBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+            confirmTitle.textContent = 'Potwierdzenie usunięcia';
+            confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybranego użytkownika z grupy?';
+            confirmModal.style.display='flex';
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.replaceWith(newConfirmBtn);
+            newConfirmBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
-                if (response.ok) {
-                    row.remove();
-                } else {
-                    alert('Failed to remove member.');
+                    if (response.ok) {
+                        row.remove();
+                    } else {
+                        alert('Failed to remove member.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the member');
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while removing the member');
-            }
+                confirmModal.style.display='none';
+            })
         });
 
         const updateRoleBtn = row.querySelector('.update-role-btn');
@@ -293,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Get form data
         const carData = getCarFormData(addCarForm);
-
+        const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to add a car.');
             window.location.href = 'main.html';
@@ -385,36 +470,44 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.remove-group-btn').forEach(button => {
             button.addEventListener('click', async (event) => {
                 const groupId = event.target.dataset.id;
+                const token = localStorage.getItem('authToken');
                 if (!token) {
                     alert('You must be logged in to manage groups.');
                     window.location.href = 'main.html';
                     return;
                 }
+                confirmTitle.textContent = 'Potwierdzenie usunięcia';
+                confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybraną grupę?';
+                confirmModal.style.display='flex';
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.replaceWith(newConfirmBtn);
+                newConfirmBtn.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch(`/car-groups/${groupId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
 
-                try {
-                    const response = await fetch(`/car-groups/${groupId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
+                        if (response.status === 401) {
+                            alert('Session expired or invalid token. Please log in again.');
+                            localStorage.removeItem('authToken');
+                            window.location.href = 'main.html';
+                            return;
                         }
-                    });
 
-                    if (response.status === 401) {
-                        alert('Session expired or invalid token. Please log in again.');
-                        localStorage.removeItem('authToken');
-                        window.location.href = 'main.html';
-                        return;
+                        if (response.ok) {
+                            event.target.closest('tr').remove();
+                        } else {
+                            alert('Failed to remove group.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while removing the group');
                     }
-
-                    if (response.ok) {
-                        event.target.closest('tr').remove();
-                    } else {
-                        alert('Failed to remove group.');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while removing the group');
-                }
+                    confirmModal.style.display='none';
+                })
             });
         });
     }
@@ -444,7 +537,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rentBtn = row.querySelector('.rent-btn');
         rentBtn.addEventListener('click', () => {
-            rentCar(car.vehicleId);
+            openRentModal(car.vehicleId);
+        });
+
+        confirmRentBtn.addEventListener('click', () => {
+            if (!selectedCarId) return;
+
+            const rentStart = rentStartInput.value;
+            const rentEnd = rentEndInput.value;
+
+            if (new Date(rentEnd) < new Date(rentStart)) {
+                alert("Data zakończenia musi być późniejsza niż data rozpoczęcia.");
+                return;
+            }
+
+            rentCar(selectedCarId, rentStart, rentEnd);
+            closeRentModalHandler();
         });
 
         const removeBtn = row.querySelector('.remove-btn');
@@ -455,31 +563,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = 'main.html';
                 return;
             }
+            confirmTitle.textContent = 'Potwierdzenie usunięcia';
+            confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybrany samochód?';// ${car.carModel.modelName} (${car.registrationNumber});
+            confirmModal.style.display='flex';
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.replaceWith(newConfirmBtn);
+            newConfirmBtn.addEventListener('click', async () => {
+                try {
+                    const response = await fetch(`/cars/${car.vehicleId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
-            try {
-                const response = await fetch(`/cars/${car.vehicleId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+                    if (response.status === 401) {
+                        alert('Session expired or invalid token. Please log in again.');
+                        localStorage.removeItem('authToken');
+                        window.location.href = 'main.html';
+                        return;
                     }
-                });
 
-                if (response.status === 401) {
-                    alert('Session expired or invalid token. Please log in again.');
-                    localStorage.removeItem('authToken');
-                    window.location.href = 'main.html';
-                    return;
+                    if (response.ok) {
+                        row.remove();
+                    } else {
+                        alert('Failed to remove car.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the car');
                 }
-
-                if (response.ok) {
-                    row.remove();
-                } else {
-                    alert('Failed to remove car.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while removing the car');
-            }
+                confirmModal.style.display='none';
+            })
         });
     }
 
@@ -590,6 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     async function fetchCarsByGroup(groupId) {
+        const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
@@ -650,46 +766,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const rentBtn = row.querySelector('.rent-btn');
             rentBtn.addEventListener('click', () => {
-                rentCar(car.vehicleId);
+                openRentModal(car.vehicleId);
+            });
+
+            confirmRentBtn.addEventListener('click', () => {
+                if (!selectedCarId) return;
+
+                const rentStart = rentStartInput.value;
+                const rentEnd = rentEndInput.value;
+
+                if (new Date(rentEnd) < new Date(rentStart)) {
+                    alert("Data zakończenia musi być późniejsza niż data rozpoczęcia.");
+                    return;
+                }
+
+                rentCar(selectedCarId, rentStart, rentEnd);
+                closeRentModalHandler();
             });
 
             const removeFromGroupBtn = row.querySelector('.remove-from-group-btn');
             removeFromGroupBtn.addEventListener('click', async () => {
+                const token = localStorage.getItem('authToken');
                 if (!token) {
                     alert('You must be logged in to remove a car from the group.');
                     window.location.href = 'main.html';
                     return;
                 }
+                confirmTitle.textContent = 'Potwierdzenie usunięcia';
+                confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybrany samochód z grupy?'
+                confirmModal.style.display='flex';
+                const newConfirmBtn = confirmBtn.cloneNode(true);
+                confirmBtn.replaceWith(newConfirmBtn);
+                newConfirmBtn.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch(`/car-groups/${groupId}/cars/${car.vehicleId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
 
-                try {
-                    const response = await fetch(`/car-groups/${groupId}/cars/${car.vehicleId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
+                        if (response.status === 401) {
+                            alert('Session expired or invalid token. Please log in again.');
+                            localStorage.removeItem('authToken');
+                            window.location.href = 'main.html';
+                            return;
                         }
-                    });
 
-                    if (response.status === 401) {
-                        alert('Session expired or invalid token. Please log in again.');
-                        localStorage.removeItem('authToken');
-                        window.location.href = 'main.html';
-                        return;
+                        if (response.ok) {
+                            row.remove();
+                        } else {
+                            alert('Failed to remove car from group.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while removing the car from the group');
                     }
-
-                    if (response.ok) {
-                        row.remove();
-                    } else {
-                        alert('Failed to remove car from group.');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while removing the car from the group');
-                }
+                    confirmModal.style.display='none';
+                })
             });
         });
     }
 
     async function fetchCars(filters = {}, groupId = null) {
+        const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
@@ -751,69 +891,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayCars(cars) {
         carList.innerHTML = '';
         cars.forEach(car => {
-            const row = document.createElement('tr');
-            row.dataset.carId = car.vehicleId;
-            row.innerHTML = `
-                <td><input type="checkbox" class="select-car-checkbox"></td>
-                <td>${car.carModel.modelName}</td>
-                <td>${car.registrationNumber}</td>
-                <td>${car.productionYear}</td>
-                <td>${car.status}</td>
-                <td>
-                    <button class="details-btn" data-id="${car.vehicleId}">Detale</button>
-                    <button class="rent-btn" data-id="${car.vehicleId}">Wypożycz</button>
-                    <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
-                </td>
-            `;
-            carList.appendChild(row);
-
-            const detailsBtn = row.querySelector('.details-btn');
-            detailsBtn.addEventListener('click', () => {
-                openDetailsModal(car);
-            });
-
-            const rentBtn = row.querySelector('.rent-btn');
-            rentBtn.addEventListener('click', () => {
-                rentCar(car.vehicleId);
-            });
-
-            const removeBtn = row.querySelector('.remove-btn');
-            removeBtn.addEventListener('click', async () => {
-                if (!token) {
-                    alert('You must be logged in to add a car.');
-                    window.location.href = 'main.html';
-                    return;
-                }
-
-                try {
-                    const response = await fetch(`/cars/${car.vehicleId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    if (response.status === 401) {
-                        alert('Session expired or invalid token. Please log in again.');
-                        localStorage.removeItem('authToken');
-                        window.location.href = 'main.html';
-                        return;
-                    }
-
-                    if (response.ok) {
-                        row.remove();
-                    } else {
-                        alert('Failed to remove car.');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred while removing the car');
-                }
-            });
+            addCarToTable(car);
         });
     }
     //temptemptemp
     async function openDetailsModal(car) {
+        const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
@@ -870,7 +953,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     detailsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to change cars details.', false);
+            return;
+        }
         if (!validateForm(detailsForm)) {
             return;
         }
@@ -989,6 +1076,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createGroupForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to create new group.', false);
+            return;
+        }
         const groupName = document.getElementById('group-name').value;
         const selectedCarIds = Array.from(document.querySelectorAll('.select-car-checkbox:checked'))
             .map(checkbox => checkbox.closest('tr').dataset.carId);
@@ -1055,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Proszę wybrać grupę.', false);
             return;
         }
-
+        const token = localStorage.getItem('authToken');
         if (!token) {
             showNotification('You must be logged in to add cars to a group.', false);
             window.location.href = 'main.html';
@@ -1091,6 +1183,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function fetchGroups() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showNotification('You must be logged in to access this data.', false);
+            return;
+        }
         try {
             const response = await fetch('/car-groups/user-groups', {
                 method: 'GET',

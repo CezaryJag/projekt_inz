@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -19,7 +20,12 @@ public class RentedCar {
     private Long vehicleId;
 
     @Column(name = "rental_date", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime rentDate;
+
+    @Column(name = "rental_end_date", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDateTime rentEndDate;
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id", referencedColumnName = "vehicle_id", insertable = false, updatable = false)
@@ -56,6 +62,14 @@ public class RentedCar {
 
     public void setRentDate(LocalDateTime rentDate) {
         this.rentDate = rentDate;
+    }
+
+    public LocalDateTime getRentEndDate() {
+        return rentEndDate;
+    }
+
+    public void setRentEndDate(LocalDateTime rentEndDate) {
+        this.rentEndDate = rentEndDate;
     }
 
     public Car getCar() {

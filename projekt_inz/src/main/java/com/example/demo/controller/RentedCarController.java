@@ -5,21 +5,29 @@ import com.example.demo.entity.RentedCar;
 import com.example.demo.entity.User;
 import com.example.demo.service.RentedCarService;
 import com.example.demo.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.example.demo.service.CarService;
+
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/rented-cars")
 public class RentedCarController {
 
+    private static final Logger log = LoggerFactory.getLogger(RentedCarController.class);
     @Autowired
     private RentedCarService rentedCarService;
 
@@ -59,7 +67,7 @@ public class RentedCarController {
     }
 
     @PostMapping("/{vehicleId}/rent")
-    public ResponseEntity<String> rentCar(@PathVariable Long vehicleId, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> rentCar(@PathVariable Long vehicleId, @RequestHeader("Authorization") String token, @RequestBody Map<String, String> rentRequest) {
         Long userId = getUserIdFromToken(token);
         Car car = carService.getCarById(vehicleId);
 
@@ -70,13 +78,19 @@ public class RentedCarController {
         car.setStatus("niedostępny");
         carService.saveCar(car);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate rentDate = LocalDate.parse(rentRequest.get("rentDate"), formatter);
+        LocalDate rentalEndDate = LocalDate.parse(rentRequest.get("rentalEndDate"), formatter);
+
         RentedCar rentedCar = new RentedCar();
         rentedCar.setUserId(userId);
         rentedCar.setVehicleId(vehicleId);
-        rentedCar.setRentDate(LocalDateTime.now());
+        rentedCar.setRentDate(rentDate.atStartOfDay());  //konwersja na date
+        rentedCar.setRentEndDate(rentalEndDate.atStartOfDay());
+
         rentedCarService.rentCar(rentedCar);
 
-        return ResponseEntity.ok("Wypożyczono samochód");
+        return ResponseEntity.ok("Wypożyczono samochód od " + rentedCar.getRentDate() + " do " + rentedCar.getRentEndDate());
     }
 
     private Long getUserIdFromToken(String token) {

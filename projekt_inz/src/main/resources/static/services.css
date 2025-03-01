@@ -188,7 +188,8 @@ body {
     height: auto;
 }
 
-.car-table .remove-btn {
+.car-table .remove-btn,.car-table .remove-from-group-btn,
+.remove-member-btn, .remove-from-group-btn,.remove-group-btn {
     background-color: #dc3545;
     color: white;
     border: none;
@@ -197,7 +198,8 @@ body {
     cursor: pointer;
 }
 
-.car-table .remove-btn:hover {
+.car-table .remove-btn:hover,.car-table .remove-from-group-btn:hover,
+.remove-member-btn:hover, .remove-from-group-btn:hover,.remove-group-btn:hover {
     background-color: #c82333;
 }
 

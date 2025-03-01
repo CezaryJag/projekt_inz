@@ -353,6 +353,35 @@
             </form>
         </div>
     </div>
+    <!-- potwierdzenie -->
+    <div class="modal" id="confirm-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-confirm">&times;</span>
+            <div class="container">
+                <h1>Temp</h1>
+                <p>Are you sure?</p>
+
+                <div class="clearfix">
+                    <button type="button" class="cancelbtn" id="confirm-cancel">Cancel</button>
+                    <button type="button" class="deletebtn" id="confirm-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- rent -->
+    <div class="modal" id="rent-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-rent-modal">&times;</span>
+            <h2>Wybierz okres wypożyczenia</h2>
+            <label for="rent-start">Data rozpoczęcia:</label>
+            <input type="date" id="rent-start" required>
+
+            <label for="rent-end">Data zakończenia:</label>
+            <input type="date" id="rent-end" required>
+
+            <button id="confirm-rent">Wypożycz</button>
+        </div>
+    </div>
     <!-- Stopka -->
     <footer class="footer">
         <div class="footer-line"></div> <!-- Dodana linia -->

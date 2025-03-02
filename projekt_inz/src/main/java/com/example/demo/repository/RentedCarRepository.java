@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface RentedCarRepository extends JpaRepository<RentedCar, Long> {
     List<RentedCar> findByUserId(Long userId);
+
+    RentedCar findByVehicleId(Long vehicleId);
 }

@@ -45,11 +45,17 @@ public class RentedCarController {
     }
 
     @PostMapping("/{vehicleId}/extend")
-    public ResponseEntity<Void> extendRent(@PathVariable Long vehicleId, @RequestHeader("Authorization") String token) {
-        // Implement logic to extend rent
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> extendRent(@PathVariable Long vehicleId, @RequestBody Map<String, String> requestBody) {
+        try {
+            String newEndDateStr = requestBody.get("newEndDate");
+            LocalDate newEndDate = LocalDate.parse(newEndDateStr);
+            rentedCarService.extendRent(vehicleId, newEndDate.atStartOfDay());
+            return ResponseEntity.ok("Wypożyczenie przedłużone.");
+        } catch (Exception e) {
+            log.error("Error extending rent for vehicleId {}: {}", vehicleId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while extending the rent");
+        }
     }
-
     @DeleteMapping("/{vehicleId}/cancel")
     public ResponseEntity<Void> cancelRent(@PathVariable Long vehicleId, @RequestHeader("Authorization") String token) {
         Long userId = getUserIdFromToken(token);

@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
     const rentedCarList = document.getElementById('rented-car-list').querySelector('tbody');
-    const rentModal = document.getElementById('rent-modal');
-    const closeRentModal = document.getElementById('close-rent-modal');
-    const rentStartInput = document.getElementById('rent-start');
-    const rentEndInput = document.getElementById('rent-end');
-    const confirmRentBtn = document.getElementById('confirm-rent');
-
+    const extendRentModal = document.getElementById('extend-rent-modal');
+    const closeExtendRentModal = document.getElementById('close-extend-rent-modal');
+    const currentEndDateInput = document.getElementById('current-end-date');
+    const newEndDateInput = document.getElementById('new-end-date');
+    const confirmExtendBtn = document.getElementById('confirm-extend');
+    let currentVehicleId;
     if (!token) {
         alert('You must be logged in to access this data.');
         window.location.href = 'main.html';
@@ -53,15 +53,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const extendRentBtn = row.querySelector('.extend-rent-btn');
             extendRentBtn.addEventListener('click', () => {
-                extendRent(car.vehicleId);
+                openExtendRentModal(car.vehicleId, car.rentEndDate);
             });
-
             const cancelRentBtn = row.querySelector('.cancel-rent-btn');
             cancelRentBtn.addEventListener('click', () => {
                 cancelRent(car.vehicleId);
             });
         });
     }
+
+    function openExtendRentModal(vehicleId, currentEndDate) {
+        currentVehicleId = vehicleId;
+        currentEndDateInput.value = new Date(currentEndDate).toISOString().split('T')[0];
+        newEndDateInput.value = '';
+        extendRentModal.style.display = 'block';
+    }
+
+    closeExtendRentModal.addEventListener('click', () => {
+        extendRentModal.style.display = 'none';
+    });
+
+    confirmExtendBtn.addEventListener('click', async () => {
+        const newEndDate = newEndDateInput.value;
+        if (new Date(newEndDate) <= new Date(currentEndDateInput.value)) {
+            showNotification('Nowa data zakończenia musi być późniejsza niż obecna data zakończenia.', false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/rented-cars/${currentVehicleId}/extend`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ newEndDate })
+            });
+
+            if (response.ok) {
+                showNotification('Wypożyczenie przedłużone.', true);
+                fetchRentedCars();
+                extendRentModal.style.display = 'none';
+            } else {
+                const errorText = await response.text();
+                showNotification(`Failed to extend rent: ${errorText}`, false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An error occurred while extending the rent', false);
+        }
+    });
 
     async function extendRent(vehicleId) {
         try {

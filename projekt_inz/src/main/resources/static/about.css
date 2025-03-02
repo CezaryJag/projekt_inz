@@ -124,3 +124,37 @@
     font-size: 14px;
     color: #555;
 }
+#user-options {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    right: 20px;
+}
+
+/* Style the user options list items */
+#user-options li {
+    padding: 8px 16px;
+}
+
+/* Style the user options links */
+#user-options li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+#user-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 5px;
+}
+/* Change background color on hover */
+#user-options li a:hover {
+    background-color: #ddd;
+}

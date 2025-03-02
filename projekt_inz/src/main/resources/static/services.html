@@ -10,16 +10,16 @@
 <header class="navbar">
     <nav>
         <ul class="nav-links">
-            <li><a href="main.html">Home</a></li>
+            <li><a href="main.html">Start</a></li>
             <li class="dropdown">
-                <a href="#" class="dropbtn" id="services-btn">Services</a>
+                <a href="#" class="dropbtn" id="services-btn">Usługi</a>
                 <div class="dropdown-content" id="services-dropdown">
-                    <a href="#" data-group-id="main">Main</a>
-                    <a href="#" id="groups-link">Groups</a>
+                    <a href="#" data-group-id="main">Katalog</a>
+                    <a href="#" id="groups-link">Grupy</a>
                 </div>
             </li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+            <li><a href="about.html">O Nas</a></li>
             <li id="user-menu" style="display: block;">
                 <a href="#" id="user-icon">
                     <img src="user.png" alt="User Icon" style="width: 24px; height: 24px;">
@@ -167,11 +167,11 @@
     <div class="modal" id="rental-end-date-modal">
         <div class="modal-content">
             <span class="close-btn" id="close-rental-end-date">&times;</span>
-            <h2>Select Rental End Date</h2>
+            <h2>Wybierz datę zwrotu pojazdu</h2>
             <form id="rental-end-date-form">
-                <label for="rental-end-date">Rental End Date:</label>
+                <label for="rental-end-date">Data zwrotu pojazdu:</label>
                 <input type="date" id="rental-end-date" required>
-                <button type="submit">Confirm</button>
+                <button type="submit">Zatwierdź</button>
             </form>
         </div>
     </div>
@@ -204,7 +204,7 @@
                 <select id="member-role" required>
                     <option value="superadmin">Superadmin</option>
                     <option value="admin">Admin</option>
-                    <option value="user">User</option>
+                    <option value="user">Użytkownik</option>
                 </select>
                 <button type="submit">Dodaj</button>
             </form>
@@ -218,7 +218,7 @@
                 <select id="new-role" required>
                     <option value="superadmin">Superadmin</option>
                     <option value="admin">Admin</option>
-                    <option value="user">User</option>
+                    <option value="user">Użytkownik</option>
                 </select>
                 <button type="submit">Zaktualizuj</button>
             </form>
@@ -362,8 +362,8 @@
                 <p>Are you sure?</p>
 
                 <div class="clearfix">
-                    <button type="button" class="cancelbtn" id="confirm-cancel">Cancel</button>
-                    <button type="button" class="deletebtn" id="confirm-delete">Delete</button>
+                    <button type="button" class="cancelbtn" id="confirm-cancel">Anuluj</button>
+                    <button type="button" class="deletebtn" id="confirm-delete">Usuń</button>
                 </div>
             </div>
         </div>
@@ -387,37 +387,36 @@
         <div class="footer-line"></div> <!-- Dodana linia -->
         <div class="footer-container">
             <div class="footer-column">
-                <h3>Reach us</h3>
+                <h3> Skontaktuj sie</h3>
                 <ul>
                     <li><i class="fas fa-phone"></i> +1012 3456 789</li>
                     <li><i class="fas fa-envelope"></i> demo@gmail.com</li>
                     <li><i class="fas fa-map-marker-alt"></i>
-                        132 Dartmouth Street Boston, <br>
-                        Massachusetts 02156 United States
+                        Wierzbowa 13/2, <br>
+                        Szczecin 70-023
                     </li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h3>Company</h3>
+                <h3>Firma</h3>
                 <ul>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="about.html">O nas</a></li>
+                    <li><a href="contact.html">Kontakt</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h3>Legal</h3>
                 <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms & Services</a></li>
-                    <li><a href="#">Refund Policy</a></li>
+                    <li><a href="#">Polityka prywatności</a></li>
+                    <li><a href="#">Regulamin</a></li>
+                    <li><a href="#">Zasady zwrotów</a></li>
                 </ul>
             </div>
             <div class="footer-column">
-                <h3>Quick Links</h3>
+                <h3>Szybkie Menu</h3>
                 <ul>
-                    <li><a href="#">Groups</a></li>
+                    <li><a href="#">Grupy</a></li>
                     <li><a href="#">Main</a></li>
-                    <li><a href="#">Forum</a></li>
                 </ul>
             </div>
         </div>

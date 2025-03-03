@@ -677,17 +677,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fetchCarModels();
 
+    // Dodajemy event listener do przycisku, aby pokazać/ukryć dropdown
     servicesBtn.addEventListener('click', (event) => {
         event.preventDefault();
-        servicesDropdown.style.display = servicesDropdown.style.display === 'none' ? 'block' : 'none';
+        event.stopPropagation(); // Zapobiega natychmiastowemu zamknięciu przez event 'click' na document
+
+        // Sprawdzamy obecną widoczność i zmieniamy jej stan
+        if (servicesDropdown.style.display === 'block') {
+            servicesDropdown.style.display = 'none';
+        } else {
+            servicesDropdown.style.display = 'block';
+        }
     });
 
+// Obsługa kliknięcia w opcję dropdowna
     servicesDropdown.addEventListener('click', (event) => {
         if (event.target.tagName === 'A') {
             const groupId = event.target.dataset.groupId;
             currentGroupId = groupId === 'main' ? null : groupId;
             console.log('Selected Group ID:', currentGroupId); // Debugging log
+
             clearFilters();
+
             if (groupId === 'main') {
                 fetchCars();
                 document.querySelector('.car-list-container').style.display = 'block';
@@ -699,9 +710,18 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 fetchCarsByGroup(groupId);
             }
+
             servicesDropdown.style.display = 'none';
         }
     });
+
+// Zamknięcie dropdowna po kliknięciu poza nim
+    document.addEventListener('click', (event) => {
+        if (!servicesDropdown.contains(event.target) && event.target !== servicesBtn) {
+            servicesDropdown.style.display = 'none';
+        }
+    });
+
 
 
     async function fetchCarsByGroup(groupId) {

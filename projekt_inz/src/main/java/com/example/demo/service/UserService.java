@@ -75,7 +75,7 @@ public class UserService {
         token.setExpiryDate(15); // Token ważny przez 24 godziny
         tokenRepository.save(token);
 
-
+        sendVerificationEmail(email, token.getToken());
 
         return user;
     }
@@ -90,7 +90,7 @@ public class UserService {
         emailMessage.setSubject(subject);
         emailMessage.setText(message);
 
-
+        mailSender.send(emailMessage);
     }
 
     public boolean confirmToken(String token) {

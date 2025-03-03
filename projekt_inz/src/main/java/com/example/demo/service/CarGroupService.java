@@ -93,39 +93,85 @@ public class CarGroupService {
     }
 
     public GroupMember addUserToGroup(Long groupId, String email, String role) {
-        CarGroup carGroup = getCarGroupById(groupId);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User not found"));        GroupMember groupMember = new GroupMember();
-        groupMember.setCarGroup(carGroup);
-        groupMember.setUser(user);
-        groupMember.setRole(role);
-        return groupMemberRepository.save(groupMember);
-    }
-
-    public void removeUserFromGroup(Long groupId, Long userId) {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+        long userId = user.getUserId();
         List<GroupMember> members = groupMemberRepository.findByCarGroup_GroupId(groupId);
         GroupMember groupMember = members.stream()
                 .filter(m -> m.getUser().getUserId().equals(userId))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("User not in group"));
-        if ("superadmin".equals(groupMember.getRole())) {
+
+        CarGroup carGroup = getCarGroupById(groupId);
+        User user1 = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("User not found"));
+        GroupMember groupMember1 = new GroupMember();
+        groupMember1.setCarGroup(carGroup);
+        groupMember1.setUser(user1);
+        groupMember1.setRole(role);
+
+        if ("superadmin".equals(groupMember1.getRole())) {
+            throw new IllegalArgumentException("Cannot add superadmin to the group");
+        }
+        if ("admin".equals(groupMember.getRole()) && "admin".equals(groupMember1.getRole())) {
+            throw new IllegalArgumentException("Admin cannot add admin to the group");
+        }
+        if ("user".equals(groupMember.getRole())) {
+            throw new IllegalArgumentException("User cannot add other people to the group");
+        }
+        return groupMemberRepository.save(groupMember1);
+    }
+
+    public void removeUserFromGroup(Long groupId, Long userId) {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+        long userIdL = user.getUserId();
+        List<GroupMember> members = groupMemberRepository.findByCarGroup_GroupId(groupId);
+        GroupMember groupMember = members.stream()
+                .filter(m -> m.getUser().getUserId().equals(userIdL))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("User not in group"));
+
+        List<GroupMember> members1 = groupMemberRepository.findByCarGroup_GroupId(groupId);
+        GroupMember groupMember1 = members1.stream()
+                .filter(m -> m.getUser().getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("User not in group"));
+
+        if ("superadmin".equals(groupMember1.getRole())) {
             throw new IllegalArgumentException("Cannot remove superadmin from the group");
         }
-
+        if ("admin".equals(groupMember.getRole()) && "admin".equals(groupMember1.getRole())) {
+            throw new IllegalArgumentException("Admin cannot remove admin to the group");
+        }
+        if ("user".equals(groupMember.getRole())) {
+            throw new IllegalArgumentException("User cannot remove other people to the group");
+        }
         groupMemberRepository.delete(groupMember);
     }
 
     public void updateUserRole(Long groupId, Long userId, String newRole) {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+        long userIdL = user.getUserId();
+        List<GroupMember> members = groupMemberRepository.findByCarGroup_GroupId(groupId);
+        GroupMember groupMember = members.stream()
+                .filter(m -> m.getUser().getUserId().equals(userIdL))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("User not in group"));
+
         System.out.println("groupId = " + groupId + ", userId = " + userId + ", newRole = " + newRole);
-        GroupMember groupMember = groupMemberRepository.findByCarGroup_GroupId(groupId).stream()
+        GroupMember groupMember1 = groupMemberRepository.findByCarGroup_GroupId(groupId).stream()
                 .filter(member -> member.getUser().getUserId().equals(userId))
                 .findFirst()
                 .orElseThrow(() -> {
                     System.err.println("GroupMember not found for groupId = " + groupId + ", userId = " + userId);
                     return new NoSuchElementException("GroupMember not found");
                 });
-        if ("superadmin".equals(groupMember.getRole())) {
-            System.err.println("Cannot change role of superadmin for userId = " + userId);
+        if ("superadmin".equals(groupMember1.getRole())) {
             throw new IllegalArgumentException("Cannot change role of superadmin");
+        }
+        if ("user".equals(groupMember.getRole()) || "admin".equals(groupMember.getRole())) {
+            throw new IllegalArgumentException("User cannot remove other people to the group");
         }
         groupMember.setRole(newRole);
         groupMemberRepository.save(groupMember);

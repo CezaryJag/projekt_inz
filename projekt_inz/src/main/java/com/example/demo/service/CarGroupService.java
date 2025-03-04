@@ -37,6 +37,82 @@ public class CarGroupService {
         return carGroupRepository.findAll();
     }
 
+    public List<Car> getFilteredCarsByGroup(
+            Long groupId,
+            String yearFrom,
+            String yearTo,
+            String milageFrom,
+            String milageTo,
+            String color,
+            String status,
+            String gearType,
+            String gearCount,
+            String carModel,
+            String fuelType,
+            String bodyType,
+            String seatCount) {
+        CarGroup carGroup = carGroupRepository.findById(groupId)
+                .orElseThrow(() -> new NoSuchElementException("Group not found"));
+        if (yearFrom == null || yearFrom.isEmpty()) {
+            yearFrom = "0";
+        }
+        if (yearTo == null || yearTo.isEmpty()) {
+            yearTo = "10000";
+        }
+        if (milageFrom == null || milageFrom.isEmpty()) {
+            milageFrom = "0";
+        }
+        if (milageTo == null || milageTo.isEmpty()) {
+            milageTo = "1000000";
+        }
+        if (color == null || color.isEmpty()) {
+            color = null;
+        }
+        if (status == null || status.isEmpty()) {
+            status = null;
+        }
+        if (gearType == null || gearType.isEmpty()) {
+            gearType = null;
+        }
+        if (gearCount == null || gearCount.isEmpty()) {
+            gearCount = null;
+        }
+        if (carModel == null || carModel.isEmpty()) {
+            carModel = null;
+        }
+        if (fuelType == null || fuelType.isEmpty()) {
+            fuelType = null;
+        }
+        if (bodyType == null || bodyType.isEmpty()) {
+            bodyType = null;
+        }
+        /*if (seatCount == null || seatCount.isEmpty()) {
+            seatCount = "0";
+        }*/
+        return carGroupRepository.findByFilters(
+                groupId,
+                parseInteger(yearFrom),
+                parseInteger(yearTo),
+                parseInteger(milageFrom),
+                parseInteger(milageTo),
+                color,
+                status,
+                gearType,
+                parseInteger(gearCount),
+                carModel,
+                fuelType,
+                bodyType,
+                parseInteger(seatCount)
+        );
+    }
+    private Integer parseInteger(String value) {
+        try {
+            return (value != null && !value.isEmpty()) ? Integer.parseInt(value) : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public List<CarGroup> getCarGroupsForLoggedInUser() {
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
@@ -85,6 +161,24 @@ public class CarGroupService {
     }
 
     public void deleteCarGroup(Long groupId) {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NoSuchElementException("User not found"));
+        long userId = user.getUserId();
+        List<GroupMember> members = groupMemberRepository.findByCarGroup_GroupId(groupId);
+        GroupMember groupMember = members.stream()
+                .filter(m -> m.getUser().getUserId().equals(userId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("User not in group"));
+        if ("admin".equals(groupMember.getRole())) {
+            throw new IllegalArgumentException("Admin cannot remove group");
+        }
+        if ("user".equals(groupMember.getRole())) {
+            throw new IllegalArgumentException("User cannot remove group");
+        }
+        List<GroupMember> user_ids=groupMemberRepository.findByCarGroup_GroupId(groupId);
+        user_ids.forEach(member -> {
+            groupMemberRepository.deleteById(member.getId());
+        });
         carGroupRepository.deleteById(groupId);
     }
 
@@ -146,7 +240,7 @@ public class CarGroupService {
         if ("user".equals(groupMember.getRole())) {
             throw new IllegalArgumentException("User cannot remove other people to the group");
         }
-        groupMemberRepository.delete(groupMember);
+        groupMemberRepository.delete(groupMember1);
     }
 
     public void updateUserRole(Long groupId, Long userId, String newRole) {
@@ -174,7 +268,7 @@ public class CarGroupService {
             throw new IllegalArgumentException("User cannot remove other people to the group");
         }
         groupMember.setRole(newRole);
-        groupMemberRepository.save(groupMember);
+        groupMemberRepository.save(groupMember1);
     }
 
     public boolean existsByGroupName(String groupName) {

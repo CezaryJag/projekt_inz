@@ -316,9 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmTitle.textContent = 'Potwierdzenie usunięcia';
             confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybranego użytkownika z grupy?';
             confirmModal.style.display='flex';
-            const newConfirmBtn = confirmBtn.cloneNode(true);
-            confirmBtn.replaceWith(newConfirmBtn);
-            newConfirmBtn.addEventListener('click', async () => {
+            //const newConfirmBtn = confirmBtn.cloneNode(true);
+            //confirmBtn.replaceWith(newConfirmBtn);
+            confirmBtn.addEventListener('click', async () => {
                 try {
                     const response = await fetch(`/car-groups/${currentGroupId}/members/${member.user.userId}`, {
                         method: 'DELETE',
@@ -337,7 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('An error occurred while removing the member');
                 }
                 confirmModal.style.display='none';
-            })
+            },{once:true})
+            //confirmBtn.removeEventListener('click',async () =>{});
         });
 
         const updateRoleBtn = row.querySelector('.update-role-btn');
@@ -479,9 +480,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmTitle.textContent = 'Potwierdzenie usunięcia';
                 confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybraną grupę?';
                 confirmModal.style.display='flex';
-                const newConfirmBtn = confirmBtn.cloneNode(true);
-                confirmBtn.replaceWith(newConfirmBtn);
-                newConfirmBtn.addEventListener('click', async () => {
+                //const newConfirmBtn = confirmBtn.cloneNode(true);
+                //confirmBtn.replaceWith(newConfirmBtn);
+                confirmBtn.addEventListener('click', async () => {
                     try {
                         const response = await fetch(`/car-groups/${groupId}`, {
                             method: 'DELETE',
@@ -507,7 +508,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert('An error occurred while removing the group');
                     }
                     confirmModal.style.display='none';
-                })
+                },{once:true})
+                //confirmBtn.removeEventListener('click',async () =>{});
             });
         });
     }
@@ -566,9 +568,9 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmTitle.textContent = 'Potwierdzenie usunięcia';
             confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybrany samochód?';// ${car.carModel.modelName} (${car.registrationNumber});
             confirmModal.style.display='flex';
-            const newConfirmBtn = confirmBtn.cloneNode(true);
-            confirmBtn.replaceWith(newConfirmBtn);
-            newConfirmBtn.addEventListener('click', async () => {
+            //const newConfirmBtn = confirmBtn.cloneNode(true);
+            //confirmBtn.replaceWith(newConfirmBtn);
+            confirmBtn.addEventListener('click', async () => {
                 try {
                     const response = await fetch(`/cars/${car.vehicleId}`, {
                         method: 'DELETE',
@@ -594,7 +596,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('An error occurred while removing the car');
                 }
                 confirmModal.style.display='none';
-            })
+            },{once:true})
+            //confirmBtn.removeEventListener('click',async () =>{});
         });
     }
 
@@ -704,15 +707,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    async function fetchCarsByGroup(groupId) {
+    async function fetchCarsByGroup(groupId,filters={}) {
         const token = localStorage.getItem('authToken');
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
             return;
         }
+        console.log("📌 Wysłane zapytanie do API (z filtrami):", `/car-groups/${groupId}/cars?${new URLSearchParams(filters).toString()}`);
         try {
-            const response = await fetch(`/car-groups/${groupId}/cars`, {
+            const response = await fetch(`/car-groups/${groupId}/cars?${new URLSearchParams(filters).toString()}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -738,7 +742,20 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
             alert('An error occurred while fetching cars');
         }
+
     }
+    //filtrytest
+    filterElements.forEach(element => {
+        element.addEventListener('input', () => {
+            const filters = getFilters();
+            console.log('Applying filters for Group ID:', currentGroupId);
+            if (currentGroupId) {
+                fetchCarsByGroup(currentGroupId, filters);
+            } else {
+                fetchCars(filters);
+            }
+        });
+    });
 
     function displayCarsInGroup(cars, groupId) {
         carList.innerHTML = '';
@@ -795,9 +812,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmTitle.textContent = 'Potwierdzenie usunięcia';
                 confirmMessage.textContent = 'Czy na pewno chcesz usunąć wybrany samochód z grupy?'
                 confirmModal.style.display='flex';
-                const newConfirmBtn = confirmBtn.cloneNode(true);
-                confirmBtn.replaceWith(newConfirmBtn);
-                newConfirmBtn.addEventListener('click', async () => {
+                //const newConfirmBtn = confirmBtn.cloneNode(true);
+                //confirmBtn.replaceWith(newConfirmBtn);
+                confirmBtn.addEventListener('click', async () => {
                     try {
                         const response = await fetch(`/car-groups/${groupId}/cars/${car.vehicleId}`, {
                             method: 'DELETE',
@@ -823,7 +840,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         alert('An error occurred while removing the car from the group');
                     }
                     confirmModal.style.display='none';
-                })
+                },{once:true})
+                //confirmBtn.removeEventListener('click',async () =>{});
             });
         });
     }
@@ -873,7 +891,11 @@ document.addEventListener('DOMContentLoaded', () => {
         element.addEventListener('input', () => {
             const filters = getFilters();
             console.log('Applying filters for Group ID:', currentGroupId); // Debugging log
-            fetchCars(filters, currentGroupId);
+            if (currentGroupId) {
+                fetchCarsByGroup(currentGroupId, filters);
+            } else {
+                fetchCars(filters);
+            }
         });
     });
     function clearFilters() {

@@ -167,8 +167,8 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
+    z-index: 1000; /* Ensure the modal is above other content */
 }
-
 .modal-content {
     background-color: white;
     padding: 20px;
@@ -179,7 +179,6 @@ body {
     height: auto; /* Automatyczna wysokość */
     max-height: 720px; /* Maksymalna wysokość, w której pojawi się przewijanie */
     overflow-y: auto; /* Umożliwia przewijanie w pionie */
-    z-index: 100;
 }
 
 textarea {

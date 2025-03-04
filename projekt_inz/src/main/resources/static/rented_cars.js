@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentVehicleId = vehicleId;
         currentEndDateInput.value = new Date(currentEndDate).toISOString().split('T')[0];
         newEndDateInput.value = '';
-        extendRentModal.style.display = 'block';
+        extendRentModal.style.display = 'flex';
     }
 
     closeExtendRentModal.addEventListener('click', () => {

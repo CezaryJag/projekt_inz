@@ -267,7 +267,7 @@ public class CarGroupService {
         if ("user".equals(groupMember.getRole()) || "admin".equals(groupMember.getRole())) {
             throw new IllegalArgumentException("User cannot remove other people to the group");
         }
-        groupMember.setRole(newRole);
+        groupMember1.setRole(newRole);
         groupMemberRepository.save(groupMember1);
     }
 

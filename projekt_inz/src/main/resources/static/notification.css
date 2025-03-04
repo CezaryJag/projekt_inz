@@ -1,19 +1,66 @@
-/* Resetowanie stylów */
-* {
+.notification {
+    background: blue;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    display: block;
+}
+
+.notification:hover {
+    background-color: lightblue;
+}
+
+.notification p {
     margin: 0;
+}
+.view-car-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.view-car-btn:hover {
+    background-color: #0056b3;
+}
+#user-options {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    list-style: none;
     padding: 0;
-    box-sizing: border-box;
+    margin: 0;
+    right: 20px;
 }
 
-/* Ogólny styl strony */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    min-height: 100vh;
-    position: relative;
+/* Style the user options list items */
+#user-options li {
+    padding: 8px 16px;
 }
 
-/* Styl nawigacji */
+/* Style the user options links */
+#user-options li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+#user-icon {
+    margin-left: 20px; /* Adjust the margin as needed */
+}
+/* Change background color on hover */
+#user-options li a:hover {
+    background-color: #ddd;
+}
+
 /* Ogólne ustawienia nawigacji */
 .navbar {
     background-color: #007bff; /* Tło navbar */
@@ -51,22 +98,6 @@ body {
     text-decoration: underline;
 }
 
-/* Ensure the group details container is displayed */
-.group-details-container {
-    display: none;
-}
-/* Style the "Członkowie" button */
-#view-members-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
 
 #view-members-btn:hover {
     background-color: #0056b3;
@@ -115,46 +146,7 @@ body {
     position: relative; /* Aby menu było pozycjonowane względem rodzica */
 }
 
-/* Styl dla tabeli samochodów */
-.car-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    /*text-align: left;*/
-}
 
-.car-table th, .car-table td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-}
-
-.car-table th {
-    background-color: #007bff;
-    color: white;
-    text-transform: uppercase;
-    font-size: 14px;
-}
-
-.car-table img {
-    width: 50px;
-    height: auto;
-}
-
-.car-table .remove-btn,.car-table .remove-from-group-btn,
-.remove-member-btn, .remove-from-group-btn,.remove-group-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.car-table .remove-btn:hover,.car-table .remove-from-group-btn:hover,
-.remove-member-btn:hover, .remove-from-group-btn:hover,.remove-group-btn:hover {
-    background-color: #c82333;
-}
 
 /* Modal stylizacja */
 .modal {
@@ -308,64 +300,4 @@ button:hover {
     .footer-container {
         grid-template-columns: 1fr 1fr; /* Dwie kolumny na mniejszych ekranach */
     }
-}
-
-
-
-.notification {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.notification p {
-    margin: 0;
-}
-
-.view-car-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.view-car-btn:hover {
-    background-color: #0056b3;
-}
-#user-options {
-    display: none;
-    position: absolute;
-    background-color: white;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    right: 20px;
-}
-
-/* Style the user options list items */
-#user-options li {
-    padding: 8px 16px;
-}
-
-/* Style the user options links */
-#user-options li a {
-    text-decoration: none;
-    color: black;
-    display: block;
-}
-#user-icon {
-    margin-left: 20px; /* Adjust the margin as needed */
-}
-/* Change background color on hover */
-#user-options li a:hover {
-    background-color: #ddd;
 }

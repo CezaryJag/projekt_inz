@@ -146,22 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
             phoneNumber: phone
         };
 
-        loginModal.style.display = 'none';
-        notification.textContent = 'Registration completed, please confirm your email';
-        notification.style.position = 'fixed';
-        notification.style.top = '0';
-        notification.style.left = '50%';
-        notification.style.transform = 'translateX(-50%)';
-        notification.style.backgroundColor = 'green';
-        notification.style.color = 'white';
-        notification.style.padding = '10px';
-        notification.style.zIndex = '1000';
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 5000);
-
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -175,6 +159,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const error = await response.json();
                 registerError.textContent = error.message;
                 registerError.style.display = 'block';
+            }
+
+            if (response.ok) {
+                loginModal.style.display = 'none';
+                notification.textContent = 'Registration completed, please confirm your email';
+                notification.style.position = 'fixed';
+                notification.style.top = '0';
+                notification.style.left = '50%';
+                notification.style.transform = 'translateX(-50%)';
+                notification.style.backgroundColor = 'green';
+                notification.style.color = 'white';
+                notification.style.padding = '10px';
+                notification.style.zIndex = '1000';
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 5000);
             }
         } catch (error) {
             console.error('Error:', error);

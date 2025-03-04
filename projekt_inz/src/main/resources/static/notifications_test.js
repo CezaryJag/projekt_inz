@@ -38,13 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cars.forEach(car => {
             const rentEndDate = new Date(car.rentEndDate);
             if (rentEndDate <= fiveDaysFromNow && rentEndDate >= now) {
-                const notification = document.createElement('div');
+                const notification = document.createElement('button');
                 notification.className = 'notification';
                 notification.innerHTML = `
-                    <p>Wypożyczenie samochodu o numerze rejestracyjnym ${car.car ? car.car.registrationNumber : 'Unknown Registration'} i modelu ${car.car ? car.car.carModel.modelName : 'Unknown Model'} wygasa dnia ${rentEndDate.toLocaleDateString()}.</p>
-                    <button class="view-car-btn">Zobacz auto</button>
-                `;
-                notification.querySelector('.view-car-btn').addEventListener('click', () => {
+                <p>Wypożyczenie samochodu o numerze rejestracyjnym ${car.car ? car.car.registrationNumber : 'Unknown Registration'} i modelu ${car.car ? car.car.carModel.modelName : 'Unknown Model'} wygasa dnia ${rentEndDate.toLocaleDateString()}.</p>
+            `;
+                notification.addEventListener('click', () => {
                     window.location.href = 'rented_cars.html';
                 });
                 notificationsList.appendChild(notification);

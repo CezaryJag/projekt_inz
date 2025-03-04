@@ -46,9 +46,27 @@ public class CarGroupController {
     }
 
     @GetMapping("/{groupId}/cars")
-    public List<Car> getCarsByGroupId(@PathVariable Long groupId) {
-        CarGroup carGroup = carGroupService.getCarGroupById(groupId);
-        return new ArrayList<>(carGroup.getCars());
+    public ResponseEntity<List<Car>> getFilteredCarsByGroup(
+            @PathVariable Long groupId,
+            @RequestParam(required = false) String yearFrom,
+            @RequestParam(required = false) String yearTo,
+            @RequestParam(required = false) String milageFrom,
+            @RequestParam(required = false) String milageTo,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String gearboxType,
+            @RequestParam(required = false) String gearboxCount,
+            //@RequestBody(required = false) String fuelType,
+            @RequestParam(required = false) String carModel,
+            @RequestParam(required = false) String fuelType,
+            @RequestParam(required = false) String bodyType,
+            @RequestParam(required = false) String seatCount
+    ) {
+        List<Car> filteredCars = carGroupService.getFilteredCarsByGroup(
+                groupId, yearFrom,yearTo,milageFrom,milageTo,color,
+                status, gearboxType,gearboxCount,carModel, fuelType, bodyType, seatCount
+        );
+        return ResponseEntity.ok(filteredCars);
     }
 
     @DeleteMapping("/{groupId}/cars/{carId}")

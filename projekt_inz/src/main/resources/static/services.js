@@ -526,7 +526,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${car.status}</td>
         <td>
             <button class="details-btn" data-id="${car.vehicleId}">Detale</button>
-            <button class="rent-btn" data-id="${car.vehicleId}">Wypożycz</button>
+            <button class="rent-btn ${car.status === 'niedostępny' ? 'disabled' : ''}" 
+                data-id="${car.vehicleId}" 
+                ${car.status === 'niedostępny' ? 'disabled' : ''}>
+                Wypożycz
+            </button>
             <button class="remove-btn" data-id="${car.vehicleId}">Usuń</button>
         </td>
     `;
@@ -544,7 +548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         confirmRentBtn.addEventListener('click', () => {
             if (!selectedCarId) return;
-
+            //console.log("ID inside btn:", selectedCarId);
             const rentStart = rentStartInput.value;
             const rentEnd = rentEndInput.value;
 
@@ -552,8 +556,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Data zakończenia musi być późniejsza niż data rozpoczęcia.");
                 return;
             }
-
-            rentCar(selectedCarId, rentStart, rentEnd);
+            const tempId = selectedCarId;
+            rentCar(selectedCarId, rentStart, rentEnd)
+            .then(() => {
+                const rentBtn = document.querySelector(`.rent-btn[data-id="${tempId}"]`);
+                //console.log("Rent button:", rentBtn);
+                //console.log("ID:", tempId);
+                if (rentBtn) {
+                    rentBtn.classList.add('disabled');
+                    rentBtn.setAttribute('disabled', true);
+                }
+            });
             closeRentModalHandler();
         });
 
@@ -790,7 +803,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>${car.status}</td>
             <td>
                 <button class="details-btn" data-id="${car.vehicleId}">Detale</button>
-                <button class="rent-btn" data-id="${car.vehicleId}">Wypożycz</button>
+                <button class="rent-btn ${car.status === 'niedostępny' ? 'disabled' : ''}" 
+                data-id="${car.vehicleId}" 
+                ${car.status === 'niedostępny' ? 'disabled' : ''}>
+                Wypożycz
+            </button>
                 <button class="remove-from-group-btn" data-id="${car.vehicleId}" data-group-id="${groupId}">Usuń z grupy</button>
             </td>
         `;
@@ -816,8 +833,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert("Data zakończenia musi być późniejsza niż data rozpoczęcia.");
                     return;
                 }
-
-                rentCar(selectedCarId, rentStart, rentEnd);
+                const tempId = selectedCarId;
+                rentCar(selectedCarId, rentStart, rentEnd)
+                    .then(() => {
+                        const rentBtn = document.querySelector(`.rent-btn[data-id="${tempId}"]`);
+                        //console.log("Rent button:", rentBtn);
+                        //console.log("ID:", tempId);
+                        if (rentBtn) {
+                            rentBtn.classList.add('disabled');
+                            rentBtn.setAttribute('disabled', true);
+                        }
+                    });
                 closeRentModalHandler();
             });
 

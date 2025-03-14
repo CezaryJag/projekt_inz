@@ -429,6 +429,14 @@ datalist {
     margin-top: 10px;
 }
 
+/* rent button wylaczony */
+.rent-btn.disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: auto;
+    border: 1px solid #999;
+}
+
 /* Stopka */
 .footer {
     background-color: #007bff; /* Kolor tła */

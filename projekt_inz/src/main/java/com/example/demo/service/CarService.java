@@ -99,7 +99,7 @@ public class CarService {
         );
 
     }
-    private Integer parseInteger(String value) {
+    Integer parseInteger(String value) {
         try {
             return (value != null && !value.isEmpty()) ? Integer.parseInt(value) : null;
         } catch (NumberFormatException e) {
@@ -157,11 +157,16 @@ public class CarService {
                 .orElseThrow(() -> new NoSuchElementException("CarModel not found"));
         car.setCarModel(carModel);
 
-        Color color = colorRepository.findByColorName(car.getColor().getColorName());
-        if (color == null) {
-            color = colorRepository.save(car.getColor());
+        Color color = car.getColor();
+        if (color != null) {
+            Color existingColor = colorRepository.findByColorName(color.getColorName());
+            if (existingColor == null) {
+                color = colorRepository.save(color);
+            } else {
+                color = existingColor;
+            }
+            car.setColor(color);
         }
-        car.setColor(color);
 
         Maintenance maintenance = car.getMaintenance();
         if (maintenance != null) {

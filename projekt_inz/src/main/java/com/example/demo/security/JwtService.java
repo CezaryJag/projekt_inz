@@ -16,8 +16,12 @@ public class JwtService {
 
     private final String SECRET_KEY = "DIODIWOANIONAIODNAEOFNWFOINQOIFNOIEQFNWOIREREIRWNIRWENOWERPNWERP";
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        //String token = createToken(claims, username);
+        //System.out.println("Generated token with role: " + role);
+        //System.out.println("Token: " + token);
         return createToken(claims, username);
     }
 
@@ -33,6 +37,9 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

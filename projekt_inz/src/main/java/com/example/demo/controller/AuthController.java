@@ -94,11 +94,12 @@ public class AuthController {
         }
 
         User loggedInUser = userService.findByEmail(email);
-        String token = jwtService.generateToken(loggedInUser.getEmail());
+        String token = jwtService.generateToken(loggedInUser.getEmail(),loggedInUser.getRole());
         response.put("token", token);
         response.put("name", loggedInUser.getName());
         response.put("surname", loggedInUser.getSurname());
         response.put("id", String.valueOf(loggedInUser.getUserId()));
+        response.put("role", loggedInUser.getRole());
         return ResponseEntity.ok(response);
     }
 

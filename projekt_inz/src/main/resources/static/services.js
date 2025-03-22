@@ -535,7 +535,32 @@ document.addEventListener('DOMContentLoaded', () => {
         </td>
     `;
         carList.appendChild(row);
+        //remove_button_test
+        const token = localStorage.getItem('authToken');
+        let userRole = null;
 
+        if (token) {
+            try {
+                const decodedToken = JSON.parse(atob(token.split('.')[1]));
+                userRole = decodedToken.role; //rola z dekodowanego tokena
+                //console.log("token: ",decodedToken)
+                //console.log("➡️ User role from token:", userRole);
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+        }
+
+        if (userRole !== 'ADMIN') {
+            //ukrycie dodania auta (id:add-car-btn)
+            const addCarBtn = document.getElementById('add-car-btn');
+            if (addCarBtn) addCarBtn.style.display = 'none';
+
+            //ukrycie usuwania auta dla kazdego auta z listy samochodow(id:remove-btn)
+            const removeBtns = document.querySelectorAll('.remove-btn');
+            removeBtns.forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
         const detailsBtn = row.querySelector('.details-btn');
         detailsBtn.addEventListener('click', () => {
             openDetailsModal(car);
@@ -965,6 +990,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //temptemptemp
     async function openDetailsModal(car) {
         const token = localStorage.getItem('authToken');
+        let userRole = null;
         if (!token) {
             alert('You must be logged in to access this data.');
             window.location.href = 'main.html';
@@ -980,6 +1006,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (response.ok) {
                 currcar = await response.json();
+                const decodedToken = JSON.parse(atob(token.split('.')[1]));
+                userRole = decodedToken.role;
             }
         }catch (error) {
             console.error('Error:', error);
@@ -997,7 +1025,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('details-body-type').value = currcar.bodyType;
         document.getElementById('details-seat-count').value = currcar.seatCount;
         document.getElementById('details-status').value = currcar.status;
-
+        const saveButton = document.querySelector('#details-form button[type="submit"]');
         if (car.maintenance) {
             document.getElementById('details-maintenance-date').value = formatDate(currcar.maintenance.maintenanceDate);
             document.getElementById('details-maintenance-end-date').value = formatDate(currcar.maintenance.maintenanceEndDate);
@@ -1009,7 +1037,18 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('details-maintenance-cost').value = '';
             document.getElementById('details-maintenance-details').value = '';
         }
-
+        const formElements = document.querySelectorAll('#details-form input, #details-form select, #details-form textarea');
+        formElements.forEach(element => {
+            if (userRole !== 'ADMIN') {
+                element.setAttribute('readonly', true);
+                element.setAttribute('disabled', true);
+                saveButton.style.display = 'none';
+            } else {
+                element.removeAttribute('readonly');
+                element.removeAttribute('disabled');
+                saveButton.style.display = 'inline-block';
+            }
+        });
         detailsModal.style.display = 'flex';
     }
 

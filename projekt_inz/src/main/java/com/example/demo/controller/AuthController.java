@@ -30,6 +30,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
         Map<String, String> response = new HashMap<>();
+
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             response.put("message", "Email is required");
             return ResponseEntity.badRequest().body(response);
@@ -54,7 +55,10 @@ public class AuthController {
             response.put("message", "Phone number already exists");
             return ResponseEntity.badRequest().body(response);
         }
-
+        if (!userService.isValidAccessKey(user.getAccessKey())) {
+            response.put("message", "Invalid access key");
+            return ResponseEntity.badRequest().body(response);
+        }
         userService.registerUser(
                 user.getName(),
                 user.getSurname(),
@@ -62,7 +66,8 @@ public class AuthController {
                 user.getPassword(),
                 user.getRole(),
                 user.getAddress(),
-                user.getPhoneNumber()
+                user.getPhoneNumber(),
+                user.getAccessKey()
         );
         response.put("message", "User registered successfully, check your email");
         return ResponseEntity.ok(response);

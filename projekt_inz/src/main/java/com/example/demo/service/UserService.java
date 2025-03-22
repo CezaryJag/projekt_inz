@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.AccessKey;
 import com.example.demo.entity.ResetToken;
 import com.example.demo.entity.User;
 import com.example.demo.entity.VerificationToken;
+import com.example.demo.repository.AccessKeyRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.VerificationTokenRepository;
 import com.example.demo.repository.ResetTokenRepository;
@@ -27,6 +29,15 @@ public class UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private AccessKeyRepository accessKeyRepository;
+
+
+    public boolean isValidAccessKey(String accessKey) {
+        Optional<AccessKey> key = accessKeyRepository.findByKeyValueAndIsUsedFalse(accessKey);
+        return key.isPresent();
+    }
+
     public boolean emailExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
@@ -42,7 +53,7 @@ public class UserService {
         this.resetTokenRepository = resetTokenRepository;
     }
 
-    public User registerUser(String name, String surname, String email, String password, String role, String address, String phoneNumber) {
+    public User registerUser(String name, String surname, String email, String password, String role, String address, String phoneNumber,String accessKey) {
         // Sprawdzenie, czy e-mail jest już zajęty
         if (userRepository.findByEmail(email).isPresent()) {
             throw new RuntimeException("Email already exists");
@@ -50,6 +61,10 @@ public class UserService {
         if (role == null || role.isEmpty()) {
             role = "USER";
         }
+        AccessKey key = accessKeyRepository.findByKeyValueAndIsUsedFalse(accessKey).orElseThrow(() -> new RuntimeException("Invalid access key"));
+        key.setUsed(true);
+        accessKeyRepository.save(key);
+
         // Szyfrowanie hasła
         String encodedPassword = passwordEncoder.encode(password);
 
@@ -63,7 +78,8 @@ public class UserService {
         user.setAddress(address);
         user.setPhoneNumber(phoneNumber);
         user.setAccountCreationDate(new Date());
-        user.setEmailConfirmed(false); // Ustawienie jako niepotwierdzone
+        user.setEmailConfirmed(false);
+        user.setAccessKey(accessKey);// Ustawienie jako niepotwierdzone
 
         // Zapis użytkownika w bazie danych
         userRepository.save(user);

@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const firstname = document.getElementById('firstname').value;
         const lastname = document.getElementById('lastname').value;
         const phone = document.getElementById('phone').value;
+        const accessKey = document.getElementById('access-key').value; // Ensure this line is present
         const registerError = document.getElementById('register-error');
         const notification = document.createElement('div');
 
@@ -143,7 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
             password,
             name: firstname,
             surname: lastname,
-            phoneNumber: phone
+            phoneNumber: phone,
+            accessKey // Ensure this line is present
         };
 
         try {

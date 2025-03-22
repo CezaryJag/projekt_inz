@@ -43,7 +43,18 @@ public class User {
     @Column(name = "is_email_confirmed")
     private boolean isEmailConfirmed = false;
 
+    @Column(name = "access_key", nullable = false)
+    private String accessKey;
+
     private boolean enabled = false;
+
+    public String getAccessKey() {
+        return accessKey;
+    }
+
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
+    }
 
     public Long getUserId() {
         return userId;

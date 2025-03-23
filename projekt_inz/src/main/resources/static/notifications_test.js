@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cars.forEach(car => {
             const rentEndDate = new Date(car.rentEndDate);
-            if (rentEndDate <= fiveDaysFromNow && rentEndDate >= now) {
+            if (rentEndDate <= fiveDaysFromNow || rentEndDate < now.setHours(0, 0, 0, 0)) {
                 const notification = document.createElement('button');
                 notification.className = 'notification';
                 notification.innerHTML = `
